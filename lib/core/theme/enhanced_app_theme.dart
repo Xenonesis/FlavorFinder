@@ -19,10 +19,13 @@ class EnhancedAppTheme {
   
   // Dark Theme Colors
   static const Color darkPrimaryColor = Color(0xFFFF6B35);
-  static const Color darkBackgroundColor = Color(0xFF121212);
-  static const Color darkSurfaceColor = Color(0xFF1E1E1E);
-  static const Color darkTextPrimary = Color(0xFFFFFFFF);
-  static const Color darkTextSecondary = Color(0xFFB0B0B0);
+  static const Color darkBackgroundColor = Color(0xFF0D1117);
+  static const Color darkSurfaceColor = Color(0xFF161B22);
+  static const Color darkCardColor = Color(0xFF21262D);
+  static const Color darkTextPrimary = Color(0xFFF0F6FC);
+  static const Color darkTextSecondary = Color(0xFF8B949E);
+  static const Color darkBorderColor = Color(0xFF30363D);
+  static const Color darkDividerColor = Color(0xFF21262D);
 
   // Border and Divider Colors
   static const Color borderColor = Color(0xFFE8E8E8);
@@ -205,6 +208,9 @@ class EnhancedAppTheme {
       primarySwatch: _createMaterialColor(darkPrimaryColor),
       primaryColor: darkPrimaryColor,
       scaffoldBackgroundColor: darkBackgroundColor,
+      cardColor: darkCardColor,
+      dividerColor: darkDividerColor,
+      shadowColor: Colors.black.withOpacity(0.5),
       colorScheme: const ColorScheme.dark(
         primary: darkPrimaryColor,
         secondary: secondaryColor,
@@ -286,8 +292,19 @@ class EnhancedAppTheme {
         ),
       ),
       
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: darkPrimaryColor,
+          side: const BorderSide(color: darkPrimaryColor, width: 1.5),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      ),
+      
       cardTheme: CardThemeData(
-        color: darkSurfaceColor,
+        color: darkCardColor,
         elevation: 4,
         shadowColor: Colors.black.withOpacity(0.3),
         shape: RoundedRectangleBorder(
@@ -297,16 +314,60 @@ class EnhancedAppTheme {
       ),
       
       appBarTheme: const AppBarTheme(
-        backgroundColor: darkPrimaryColor,
-        foregroundColor: Colors.white,
+        backgroundColor: darkBackgroundColor,
+        foregroundColor: darkTextPrimary,
         elevation: 0,
         centerTitle: false,
         titleTextStyle: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.w600,
-          color: Colors.white,
+          color: darkTextPrimary,
           letterSpacing: 0.15,
         ),
+      ),
+      
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: darkSurfaceColor,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: darkBorderColor),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: darkBorderColor),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: darkPrimaryColor, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      ),
+      
+      chipTheme: ChipThemeData(
+        backgroundColor: darkSurfaceColor,
+        selectedColor: darkPrimaryColor.withOpacity(0.2),
+        labelStyle: const TextStyle(color: darkTextPrimary),
+        secondaryLabelStyle: const TextStyle(color: darkPrimaryColor),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+      ),
+      
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: darkCardColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+      ),
+      
+      iconTheme: const IconThemeData(
+        color: darkTextSecondary,
+      ),
+      
+      primaryIconTheme: const IconThemeData(
+        color: darkPrimaryColor,
       ),
     );
   }

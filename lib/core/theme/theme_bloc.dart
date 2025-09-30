@@ -1,99 +1,117 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:equatable/equatable.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // Events
 abstract class ThemeEvent extends Equatable {
-  const ThemeEvent();
-
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class LoadTheme extends ThemeEvent {}
 
 class ToggleTheme extends ThemeEvent {}
 
-class SetTheme extends ThemeEvent {
-  final bool isDarkMode;
-
-  const SetTheme(this.isDarkMode);
-
+class SetThemeMode extends ThemeEvent {
+  final ThemeMode themeMode;
+  
+  SetThemeMode(this.themeMode);
+  
   @override
-  List<Object> get props => [isDarkMode];
+  List<Object?> get props => [themeMode];
 }
 
 // States
 class ThemeState extends Equatable {
+  final ThemeMode themeMode;
   final bool isDarkMode;
-  final bool isLoading;
-
+  
   const ThemeState({
-    this.isDarkMode = false,
-    this.isLoading = false,
+    required this.themeMode,
+    required this.isDarkMode,
   });
-
+  
+  @override
+  List<Object?> get props => [themeMode, isDarkMode];
+  
   ThemeState copyWith({
+    ThemeMode? themeMode,
     bool? isDarkMode,
-    bool? isLoading,
   }) {
     return ThemeState(
+      themeMode: themeMode ?? this.themeMode,
       isDarkMode: isDarkMode ?? this.isDarkMode,
-      isLoading: isLoading ?? this.isLoading,
     );
   }
-
-  @override
-  List<Object> get props => [isDarkMode, isLoading];
 }
 
-// Bloc
+// BLoC
 class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
   static const String _themeKey = 'theme_mode';
-
-  ThemeBloc() : super(const ThemeState()) {
+  
+  ThemeBloc() : super(const ThemeState(
+    themeMode: ThemeMode.system,
+    isDarkMode: false,
+  )) {
     on<LoadTheme>(_onLoadTheme);
     on<ToggleTheme>(_onToggleTheme);
-    on<SetTheme>(_onSetTheme);
+    on<SetThemeMode>(_onSetThemeMode);
   }
-
+  
   Future<void> _onLoadTheme(LoadTheme event, Emitter<ThemeState> emit) async {
-    emit(state.copyWith(isLoading: true));
-    
     try {
       final prefs = await SharedPreferences.getInstance();
-      final isDarkMode = prefs.getBool(_themeKey) ?? false;
+      final themeModeIndex = prefs.getInt(_themeKey) ?? 0;
+      final themeMode = ThemeMode.values[themeModeIndex];
       
-      emit(state.copyWith(
+      final brightness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
+      final isDarkMode = themeMode == ThemeMode.dark || 
+          (themeMode == ThemeMode.system && brightness == Brightness.dark);
+      
+      emit(ThemeState(
+        themeMode: themeMode,
         isDarkMode: isDarkMode,
-        isLoading: false,
       ));
     } catch (e) {
-      emit(state.copyWith(isLoading: false));
+      emit(const ThemeState(
+        themeMode: ThemeMode.system,
+        isDarkMode: false,
+      ));
     }
   }
-
+  
   Future<void> _onToggleTheme(ToggleTheme event, Emitter<ThemeState> emit) async {
-    final newThemeMode = !state.isDarkMode;
-    
     try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool(_themeKey, newThemeMode);
+      final newThemeMode = state.isDarkMode ? ThemeMode.light : ThemeMode.dark;
       
-      emit(state.copyWith(isDarkMode: newThemeMode));
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt(_themeKey, newThemeMode.index);
+      
+      emit(ThemeState(
+        themeMode: newThemeMode,
+        isDarkMode: newThemeMode == ThemeMode.dark,
+      ));
     } catch (e) {
-      // Handle error silently or emit error state if needed
+      // Handle error silently
     }
   }
-
-  Future<void> _onSetTheme(SetTheme event, Emitter<ThemeState> emit) async {
+  
+  Future<void> _onSetThemeMode(SetThemeMode event, Emitter<ThemeState> emit) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool(_themeKey, event.isDarkMode);
+      await prefs.setInt(_themeKey, event.themeMode.index);
       
-      emit(state.copyWith(isDarkMode: event.isDarkMode));
+      final brightness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
+      final isDarkMode = event.themeMode == ThemeMode.dark || 
+          (event.themeMode == ThemeMode.system && brightness == Brightness.dark);
+      
+      emit(ThemeState(
+        themeMode: event.themeMode,
+        isDarkMode: isDarkMode,
+      ));
     } catch (e) {
-      // Handle error silently or emit error state if needed
+      // Handle error silently
     }
   }
 }

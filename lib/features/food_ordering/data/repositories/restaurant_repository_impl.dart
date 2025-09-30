@@ -10,7 +10,7 @@ class RestaurantRepositoryImpl implements RestaurantRepository {
   @override
   Future<List<Restaurant>> getRestaurants() async {
     try {
-      return await dataSource.getRestaurants();
+      return MockDataSource.getRestaurants();
     } catch (e) {
       throw Exception('Failed to load restaurants: ${e.toString()}');
     }

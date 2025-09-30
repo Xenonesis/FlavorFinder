@@ -17,15 +17,15 @@ class Restaurant extends Equatable {
   const Restaurant({
     required this.id,
     required this.name,
-    required this.imageUrl,
+    this.imageUrl = '',
     required this.cuisine,
     required this.rating,
     required this.deliveryTime,
     required this.deliveryFee,
-    required this.minimumOrder,
-    required this.menu,
-    required this.isOpen,
-    required this.address,
+    this.minimumOrder = 0.0,
+    this.menu = const [],
+    this.isOpen = true,
+    this.address = '',
   });
 
   @override

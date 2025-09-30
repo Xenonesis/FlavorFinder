@@ -140,7 +140,7 @@ class _FloatingCartButtonState extends State<FloatingCartButton>
                     child: Center(
                       child: Icon(
                         Icons.shopping_cart,
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.onPrimary,
                         size: 28,
                       ),
                     ),
@@ -163,7 +163,7 @@ class _FloatingCartButtonState extends State<FloatingCartButton>
                             color: Colors.red,
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.surface,
                               width: 2,
                             ),
                             boxShadow: [
@@ -178,7 +178,7 @@ class _FloatingCartButtonState extends State<FloatingCartButton>
                             child: Text(
                               widget.itemCount > 99 ? '99+' : widget.itemCount.toString(),
                               style: TextStyle(
-                                color: Colors.white,
+                                color: Theme.of(context).colorScheme.onError,
                                 fontSize: widget.itemCount > 99 ? 8 : 10,
                                 fontWeight: FontWeight.bold,
                               ),

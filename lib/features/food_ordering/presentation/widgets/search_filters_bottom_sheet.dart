@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/enhanced_app_theme.dart';
 
 class SearchFiltersBottomSheet extends StatefulWidget {
   final String? selectedCuisine;
@@ -54,9 +54,9 @@ class _SearchFiltersBottomSheetState extends State<SearchFiltersBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -66,7 +66,7 @@ class _SearchFiltersBottomSheetState extends State<SearchFiltersBottomSheet> {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: Colors.grey[300],
+              color: Theme.of(context).dividerColor,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -118,8 +118,8 @@ class _SearchFiltersBottomSheetState extends State<SearchFiltersBottomSheet> {
                           _selectedCuisine = selected ? cuisine : null;
                         });
                       },
-                      selectedColor: AppTheme.primaryColor.withOpacity(0.2),
-                      checkmarkColor: AppTheme.primaryColor,
+                      selectedColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                      checkmarkColor: Theme.of(context).colorScheme.primary,
                     );
                   }).toList(),
                 ),
@@ -179,7 +179,7 @@ class _SearchFiltersBottomSheetState extends State<SearchFiltersBottomSheet> {
                           _sortBy = value;
                         });
                       },
-                      activeColor: AppTheme.primaryColor,
+                      activeColor: Theme.of(context).colorScheme.primary,
                       contentPadding: EdgeInsets.zero,
                     );
                   }).toList(),
@@ -196,18 +196,18 @@ class _SearchFiltersBottomSheetState extends State<SearchFiltersBottomSheet> {
                       Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryColor,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Apply Filters',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.onPrimary,
                       ),
                     ),
                   ),

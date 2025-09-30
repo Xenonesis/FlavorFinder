@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/enhanced_app_theme.dart';
 
 class PromotionalBanners extends StatefulWidget {
   const PromotionalBanners({super.key});
@@ -76,8 +76,8 @@ class _PromotionalBannersState extends State<PromotionalBanners> {
           activeIndex: _currentIndex,
           count: _banners.length,
           effect: WormEffect(
-            dotColor: Colors.grey[300]!,
-            activeDotColor: AppTheme.primaryColor,
+            dotColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+            activeDotColor: EnhancedAppTheme.primaryColor,
             dotHeight: 8,
             dotWidth: 8,
           ),
@@ -186,10 +186,10 @@ class _BannerCard extends StatelessWidget {
           children: [
             Text(
               banner.subtitle,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: AppTheme.primaryColor,
+                color: EnhancedAppTheme.primaryColor,
               ),
             ),
             const SizedBox(height: 12),
@@ -199,19 +199,20 @@ class _BannerCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.grey[100],
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.grey[300]!),
+                  border: Border.all(color: Theme.of(context).dividerColor),
                 ),
                 child: Row(
                   children: [
-                    const Expanded(
+                    Expanded(
                       child: Text(
                         'WELCOME20',
                         style: TextStyle(
                           fontFamily: 'monospace',
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                     ),
@@ -219,13 +220,22 @@ class _BannerCard extends StatelessWidget {
                       onPressed: () {
                         // Copy to clipboard
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Promo code copied to clipboard!'),
-                            duration: Duration(seconds: 2),
+                          SnackBar(
+                            content: Text(
+                              'Promo code copied to clipboard!',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                            backgroundColor: Theme.of(context).colorScheme.surface,
+                            duration: const Duration(seconds: 2),
                           ),
                         );
                       },
-                      icon: const Icon(Icons.copy),
+                      icon: Icon(
+                        Icons.copy,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                       iconSize: 20,
                     ),
                   ],
@@ -245,11 +255,13 @@ class _BannerCard extends StatelessWidget {
                 // Navigate to restaurants or apply offer
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryColor,
+                backgroundColor: EnhancedAppTheme.primaryColor,
               ),
-              child: const Text(
+              child: Text(
                 'Order Now',
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
               ),
             ),
         ],

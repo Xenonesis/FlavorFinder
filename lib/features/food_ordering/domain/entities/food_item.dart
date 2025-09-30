@@ -12,6 +12,7 @@ class FoodItem extends Equatable {
   final List<String> allergens;
   final int preparationTime;
   final bool isAvailable;
+  final double rating;
 
   const FoodItem({
     required this.id,
@@ -23,8 +24,9 @@ class FoodItem extends Equatable {
     this.isVegetarian = false,
     this.isSpicy = false,
     this.allergens = const [],
-    required this.preparationTime,
+    this.preparationTime = 15,
     this.isAvailable = true,
+    this.rating = 0.0,
   });
 
   @override
@@ -40,5 +42,6 @@ class FoodItem extends Equatable {
         allergens,
         preparationTime,
         isAvailable,
+        rating,
       ];
 }

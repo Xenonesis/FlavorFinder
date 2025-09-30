@@ -136,8 +136,8 @@ class _AppInitializerState extends State<AppInitializer> {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                EnhancedAppTheme.primaryColor,
-                EnhancedAppTheme.primaryColor.withOpacity(0.8),
+                Theme.of(context).colorScheme.primary,
+                Theme.of(context).colorScheme.primary.withOpacity(0.8),
               ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,

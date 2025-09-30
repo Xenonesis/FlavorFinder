@@ -3,7 +3,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'enhanced_restaurant_list_page.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/enhanced_app_theme.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -68,11 +68,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   if (_currentPage < _onboardingItems.length - 1)
                     TextButton(
                       onPressed: _skipOnboarding,
-                      child: const Text(
+                      child: Text(
                         'Skip',
                         style: TextStyle(
                           fontSize: 16,
-                          color: Colors.grey,
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                         ),
                       ),
                     ),
@@ -108,7 +108,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     controller: _pageController,
                     count: _onboardingItems.length,
                     effect: WormEffect(
-                      dotColor: Colors.grey[300]!,
+                      dotColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
                       activeDotColor: _onboardingItems[_currentPage].primaryColor,
                       dotHeight: 12,
                       dotWidth: 12,
@@ -134,7 +134,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            child: const Text('Previous'),
+                            child: Text(
+                            'Previous',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
                           ),
                         ),
                       
@@ -156,10 +161,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                             _currentPage == _onboardingItems.length - 1
                                 ? 'Get Started'
                                 : 'Next',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.onPrimary,
                             ),
                           ),
                         ),
@@ -235,11 +240,11 @@ class _OnboardingPageContent extends StatelessWidget {
             height: 300,
             width: 300,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Theme.of(context).shadowColor.withOpacity(0.2),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
@@ -255,9 +260,7 @@ class _OnboardingPageContent extends StatelessWidget {
           // Title
           Text(
             item.title,
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
               color: item.primaryColor,
             ),
             textAlign: TextAlign.center,
@@ -268,10 +271,8 @@ class _OnboardingPageContent extends StatelessWidget {
           // Description
           Text(
             item.description,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.grey,
-              height: 1.5,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
             ),
             textAlign: TextAlign.center,
           ),

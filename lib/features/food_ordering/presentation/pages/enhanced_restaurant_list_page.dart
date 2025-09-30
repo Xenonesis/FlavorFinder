@@ -14,7 +14,7 @@ import '../widgets/cart_bottom_sheet.dart';
 import '../widgets/promotional_banners.dart';
 import '../pages/search_page.dart';
 import '../pages/profile_page.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/enhanced_app_theme.dart';
 
 class EnhancedRestaurantListPage extends StatefulWidget {
   const EnhancedRestaurantListPage({super.key});
@@ -61,7 +61,7 @@ class _EnhancedRestaurantListPageState extends State<EnhancedRestaurantListPage>
             floating: false,
             pinned: true,
             elevation: 0,
-            backgroundColor: AppTheme.primaryColor,
+            backgroundColor: Theme.of(context).colorScheme.primary,
             flexibleSpace: FlexibleSpaceBar(
               title: const Text(
                 'FlavorFinder',
@@ -74,8 +74,8 @@ class _EnhancedRestaurantListPageState extends State<EnhancedRestaurantListPage>
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      AppTheme.primaryColor,
-                      AppTheme.primaryColor.withOpacity(0.8),
+                      Theme.of(context).colorScheme.primary,
+                      Theme.of(context).colorScheme.primary.withOpacity(0.8),
                     ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -272,8 +272,8 @@ class _EnhancedRestaurantListPageState extends State<EnhancedRestaurantListPage>
                               _selectedFilter = filter;
                             });
                           },
-                          selectedColor: AppTheme.primaryColor.withOpacity(0.2),
-                          checkmarkColor: AppTheme.primaryColor,
+                          selectedColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                          checkmarkColor: Theme.of(context).colorScheme.primary,
                         ),
                       );
                     },
@@ -376,7 +376,7 @@ class _EnhancedRestaurantListPageState extends State<EnhancedRestaurantListPage>
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(

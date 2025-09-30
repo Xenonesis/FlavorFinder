@@ -8,7 +8,7 @@ import '../pages/restaurant_menu_page.dart';
 import '../bloc/favorites/favorites_bloc.dart';
 import '../bloc/favorites/favorites_event.dart';
 import '../bloc/favorites/favorites_state.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/enhanced_app_theme.dart';
 
 class EnhancedRestaurantCard extends StatelessWidget {
   final Restaurant restaurant;
@@ -27,7 +27,7 @@ class EnhancedRestaurantCard extends StatelessWidget {
       closedShape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
-      closedColor: Colors.white,
+      closedColor: Theme.of(context).colorScheme.surface,
       closedBuilder: (context, openContainer) {
         return Container(
           margin: const EdgeInsets.only(bottom: 16),
@@ -62,18 +62,18 @@ class EnhancedRestaurantCard extends StatelessWidget {
                             imageUrl: restaurant.imageUrl,
                             fit: BoxFit.cover,
                             placeholder: (context, url) => Shimmer.fromColors(
-                              baseColor: Colors.grey[300]!,
-                              highlightColor: Colors.grey[100]!,
+                              baseColor: Theme.of(context).colorScheme.surface.withOpacity(0.3),
+                              highlightColor: Theme.of(context).colorScheme.surface.withOpacity(0.1),
                               child: Container(
-                                color: Colors.white,
+                                color: Theme.of(context).colorScheme.surface,
                               ),
                             ),
                             errorWidget: (context, url, error) => Container(
-                              color: Colors.grey[200],
-                              child: const Icon(
+                              color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+                              child: Icon(
                                 Icons.restaurant,
                                 size: 50,
-                                color: Colors.grey,
+                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                               ),
                             ),
                           ),
@@ -121,7 +121,7 @@ class EnhancedRestaurantCard extends StatelessWidget {
                                 duration: const Duration(milliseconds: 200),
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.9),
+                                  color: Theme.of(context).colorScheme.surface.withOpacity(0.9),
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
@@ -162,7 +162,7 @@ class EnhancedRestaurantCard extends StatelessWidget {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: AppTheme.primaryColor.withOpacity(0.1),
+                                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Row(
@@ -192,7 +192,7 @@ class EnhancedRestaurantCard extends StatelessWidget {
                         Text(
                           restaurant.cuisine,
                           style: TextStyle(
-                            color: Colors.grey[600],
+                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                             fontSize: 14,
                           ),
                         ),
@@ -204,13 +204,13 @@ class EnhancedRestaurantCard extends StatelessWidget {
                             Icon(
                               Icons.access_time,
                               size: 16,
-                              color: Colors.grey[600],
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                             ),
                             const SizedBox(width: 4),
                             Text(
                               '${restaurant.deliveryTime} min',
                               style: TextStyle(
-                                color: Colors.grey[600],
+                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                                 fontSize: 12,
                               ),
                             ),
@@ -218,7 +218,7 @@ class EnhancedRestaurantCard extends StatelessWidget {
                             Icon(
                               Icons.delivery_dining,
                               size: 16,
-                              color: Colors.grey[600],
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                             ),
                             const SizedBox(width: 4),
                             Text(
@@ -228,7 +228,7 @@ class EnhancedRestaurantCard extends StatelessWidget {
                               style: TextStyle(
                                 color: restaurant.deliveryFee == 0
                                     ? Colors.green
-                                    : Colors.grey[600],
+                                    : Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                                 fontSize: 12,
                                 fontWeight: restaurant.deliveryFee == 0
                                     ? FontWeight.w600

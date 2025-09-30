@@ -1,234 +1,109 @@
 import '../../domain/entities/restaurant.dart';
 import '../../domain/entities/food_item.dart';
+import 'enhanced_mock_data_source.dart';
+import 'food_categories_data.dart';
+import 'restaurant_specialties_data.dart';
 
 class MockDataSource {
-  static const List<String> _restaurantImages = [
-    'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800',
-    'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800',
-    'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=800',
-    'https://images.unsplash.com/photo-1578474846511-04ba529f0b88?w=800',
-    'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=800',
-  ];
+  static List<Restaurant> getRestaurants() {
+    return EnhancedMockDataSource.getRestaurants();
+  }
 
-  static const List<String> _foodImages = [
-    'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400',
-    'https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?w=400',
-    'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400',
-    'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400',
-    'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=400',
-    'https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?w=400',
-    'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=400',
-    'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400',
-  ];
+  static List<FoodItem> getFoodItems() {
+    final mainItems = EnhancedMockDataSource.getAllFoodItems();
+    final categoryItems = FoodCategoriesData.getAllCategorizedItems()
+        .values
+        .expand((items) => items)
+        .toList();
+    
+    return [...mainItems, ...categoryItems];
+  }
 
-  Future<List<Restaurant>> getRestaurants() async {
-    // Simulate network delay
-    await Future.delayed(const Duration(milliseconds: 1500));
+  static List<FoodItem> getFoodItemsByRestaurant(String restaurantId) {
+    final restaurantMenus = RestaurantSpecialtiesData.getRestaurantMenus();
+    return restaurantMenus[restaurantId] ?? [];
+  }
 
+  static List<FoodItem> getFoodItemsByCategory(String category) {
+    final allItems = getFoodItems();
+    return allItems.where((item) => item.category == category).toList();
+  }
+
+  static List<String> getAvailableCategories() {
     return [
-      Restaurant(
-        id: '1',
-        name: 'Bella Italia',
-        imageUrl: _restaurantImages[0],
-        cuisine: 'Italian',
-        rating: 4.5,
-        deliveryTime: 30,
-        deliveryFee: 2.99,
-        minimumOrder: 15.0,
-        isOpen: true,
-        address: '123 Main St, Downtown',
-        menu: [
-          const FoodItem(
-            id: '1',
-            name: 'Margherita Pizza',
-            description: 'Classic pizza with fresh mozzarella, tomato sauce, and basil',
-            price: 16.99,
-            imageUrl: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400',
-            category: 'Pizza',
-            isVegetarian: true,
-            preparationTime: 20,
-          ),
-          const FoodItem(
-            id: '2',
-            name: 'Pepperoni Pizza',
-            description: 'Pepperoni, mozzarella cheese, and tomato sauce',
-            price: 18.99,
-            imageUrl: 'https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?w=400',
-            category: 'Pizza',
-            preparationTime: 20,
-          ),
-          const FoodItem(
-            id: '3',
-            name: 'Fettuccine Alfredo',
-            description: 'Creamy fettuccine pasta with parmesan cheese',
-            price: 14.99,
-            imageUrl: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400',
-            category: 'Pasta',
-            isVegetarian: true,
-            preparationTime: 15,
-          ),
-          const FoodItem(
-            id: '4',
-            name: 'Chicken Parmesan',
-            description: 'Breaded chicken breast with marinara sauce and mozzarella',
-            price: 19.99,
-            imageUrl: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400',
-            category: 'Main Course',
-            preparationTime: 25,
-          ),
-        ],
-      ),
-      Restaurant(
-        id: '2',
-        name: 'Spice Garden',
-        imageUrl: _restaurantImages[1],
-        cuisine: 'Indian',
-        rating: 4.3,
-        deliveryTime: 35,
-        deliveryFee: 3.49,
-        minimumOrder: 20.0,
-        isOpen: true,
-        address: '456 Curry Lane, Spice District',
-        menu: [
-          const FoodItem(
-            id: '5',
-            name: 'Chicken Tikka Masala',
-            description: 'Tender chicken in a creamy tomato-based curry sauce',
-            price: 17.99,
-            imageUrl: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=400',
-            category: 'Curry',
-            isSpicy: true,
-            preparationTime: 20,
-          ),
-          const FoodItem(
-            id: '6',
-            name: 'Vegetable Biryani',
-            description: 'Aromatic basmati rice with mixed vegetables and spices',
-            price: 15.99,
-            imageUrl: 'https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?w=400',
-            category: 'Rice',
-            isVegetarian: true,
-            preparationTime: 25,
-          ),
-          const FoodItem(
-            id: '7',
-            name: 'Garlic Naan',
-            description: 'Fresh baked bread with garlic and herbs',
-            price: 4.99,
-            imageUrl: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=400',
-            category: 'Bread',
-            isVegetarian: true,
-            preparationTime: 10,
-          ),
-          const FoodItem(
-            id: '8',
-            name: 'Lamb Vindaloo',
-            description: 'Spicy lamb curry with potatoes in a tangy sauce',
-            price: 21.99,
-            imageUrl: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400',
-            category: 'Curry',
-            isSpicy: true,
-            preparationTime: 30,
-            allergens: ['Contains: Mustard'],
-          ),
-        ],
-      ),
-      Restaurant(
-        id: '3',
-        name: 'Burger House',
-        imageUrl: _restaurantImages[2],
-        cuisine: 'American',
-        rating: 4.1,
-        deliveryTime: 25,
-        deliveryFee: 2.49,
-        minimumOrder: 12.0,
-        isOpen: true,
-        address: '789 Burger Blvd, Food Court',
-        menu: [
-          const FoodItem(
-            id: '9',
-            name: 'Classic Cheeseburger',
-            description: 'Beef patty with cheese, lettuce, tomato, and our special sauce',
-            price: 12.99,
-            imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400',
-            category: 'Burgers',
-            preparationTime: 15,
-          ),
-          const FoodItem(
-            id: '10',
-            name: 'Chicken Wings',
-            description: 'Crispy chicken wings with your choice of sauce',
-            price: 9.99,
-            imageUrl: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400',
-            category: 'Appetizers',
-            preparationTime: 12,
-          ),
-        ],
-      ),
-      Restaurant(
-        id: '4',
-        name: 'Sakura Sushi',
-        imageUrl: _restaurantImages[3],
-        cuisine: 'Japanese',
-        rating: 4.7,
-        deliveryTime: 40,
-        deliveryFee: 3.99,
-        minimumOrder: 25.0,
-        isOpen: true,
-        address: '321 Sushi Street, Japan Town',
-        menu: [
-          const FoodItem(
-            id: '11',
-            name: 'California Roll',
-            description: 'Crab, avocado, and cucumber with sesame seeds',
-            price: 8.99,
-            imageUrl: 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=400',
-            category: 'Sushi',
-            preparationTime: 10,
-          ),
-          const FoodItem(
-            id: '12',
-            name: 'Salmon Teriyaki',
-            description: 'Grilled salmon with teriyaki glaze and steamed rice',
-            price: 18.99,
-            imageUrl: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400',
-            category: 'Main Course',
-            preparationTime: 20,
-          ),
-        ],
-      ),
-      Restaurant(
-        id: '5',
-        name: 'Taco Loco',
-        imageUrl: _restaurantImages[4],
-        cuisine: 'Mexican',
-        rating: 4.2,
-        deliveryTime: 20,
-        deliveryFee: 1.99,
-        minimumOrder: 10.0,
-        isOpen: false,
-        address: '654 Taco Trail, Mexican Quarter',
-        menu: [
-          const FoodItem(
-            id: '13',
-            name: 'Fish Tacos',
-            description: 'Grilled fish with cabbage slaw and lime crema',
-            price: 11.99,
-            imageUrl: 'https://images.unsplash.com/photo-1565299585323-38174c4a6849?w=400',
-            category: 'Tacos',
-            preparationTime: 15,
-          ),
-          const FoodItem(
-            id: '14',
-            name: 'Beef Burrito',
-            description: 'Seasoned beef with rice, beans, cheese, and salsa',
-            price: 9.99,
-            imageUrl: 'https://images.unsplash.com/photo-1566740933430-b5e70b06d2d5?w=400',
-            category: 'Burritos',
-            preparationTime: 12,
-          ),
-        ],
-      ),
+      'Pizza',
+      'Burgers',
+      'Sushi',
+      'Main Course',
+      'Appetizers',
+      'Desserts',
+      'Beverages',
+      'Salads',
+      'Soups',
+      'Snacks',
+      'Breakfast',
+      'Mexican',
+      'Bowls',
+      'Tacos',
+      'Noodles',
+      'Rice',
+      'Sandwiches',
+      'Sides',
+      'Bread',
+      'Sashimi',
     ];
+  }
+
+  static List<String> getAvailableCuisines() {
+    return [
+      'Italian',
+      'Chinese',
+      'Japanese',
+      'Thai',
+      'American',
+      'Indian',
+      'Mexican',
+      'Mediterranean',
+      'Middle Eastern',
+      'Healthy',
+      'Vegetarian',
+      'Desserts',
+      'Coffee & Tea',
+      'French',
+      'Seafood',
+    ];
+  }
+
+  static List<FoodItem> getPopularItems() {
+    final allItems = getFoodItems();
+    allItems.sort((a, b) => b.rating.compareTo(a.rating));
+    return allItems.take(10).toList();
+  }
+
+  static List<Restaurant> getPopularRestaurants() {
+    final restaurants = getRestaurants();
+    restaurants.sort((a, b) => b.rating.compareTo(a.rating));
+    return restaurants.take(8).toList();
+  }
+
+  static List<FoodItem> searchFoodItems(String query) {
+    final allItems = getFoodItems();
+    final queryLower = query.toLowerCase();
+    
+    return allItems.where((item) {
+      return item.name.toLowerCase().contains(queryLower) ||
+             item.description.toLowerCase().contains(queryLower) ||
+             item.category.toLowerCase().contains(queryLower);
+    }).toList();
+  }
+
+  static List<Restaurant> searchRestaurants(String query) {
+    final restaurants = getRestaurants();
+    final queryLower = query.toLowerCase();
+    
+    return restaurants.where((restaurant) {
+      return restaurant.name.toLowerCase().contains(queryLower) ||
+             restaurant.cuisine.toLowerCase().contains(queryLower);
+    }).toList();
   }
 }

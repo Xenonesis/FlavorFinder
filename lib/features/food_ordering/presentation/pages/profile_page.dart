@@ -63,17 +63,21 @@ class ProfilePage extends StatelessWidget {
                           Text(
                             'John Doe',
                             style: TextStyle(
+                              inherit: false,
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
+                              letterSpacing: 0.1,
                             ),
                           ),
                           SizedBox(height: 4),
                           Text(
                             'john.doe@example.com',
                             style: TextStyle(
+                              inherit: false,
                               fontSize: 14,
                               color: Colors.white70,
+                              letterSpacing: 0.1,
                             ),
                           ),
                         ],
@@ -243,9 +247,11 @@ class ProfilePage extends StatelessWidget {
                   child: const Text(
                     'Logout',
                     style: TextStyle(
+                      inherit: false,
                       color: Colors.red,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
+                      letterSpacing: 0.1,
                     ),
                   ),
                 ),
@@ -276,17 +282,21 @@ class ProfilePage extends StatelessWidget {
           Text(
             value,
             style: TextStyle(
+              inherit: false,
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: color,
+              letterSpacing: 0.1,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             title,
             style: TextStyle(
+              inherit: false,
               fontSize: 12,
               color: Colors.grey[600],
+              letterSpacing: 0.1,
             ),
           ),
         ],
@@ -325,7 +335,12 @@ class ProfilePage extends StatelessWidget {
         ),
         title: Text(
           title,
-          style: const TextStyle(fontWeight: FontWeight.w600),
+          style: const TextStyle(
+            inherit: false,
+            fontWeight: FontWeight.w600,
+            fontSize: 16,
+            letterSpacing: 0.1,
+          ),
         ),
         subtitle: Text(subtitle),
         trailing: trailing ?? const Icon(Icons.chevron_right),

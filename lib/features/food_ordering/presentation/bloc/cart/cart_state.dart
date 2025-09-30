@@ -12,6 +12,8 @@ class CartState extends Equatable {
     this.totalItems = 0,
   });
 
+  double get totalPrice => items.fold(0.0, (sum, item) => sum + item.totalPrice);
+
   CartState copyWith({
     List<CartItem>? items,
     double? subtotal,

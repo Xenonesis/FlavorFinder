@@ -8,6 +8,7 @@ import '../bloc/cart/cart_state.dart';
 import '../widgets/restaurant_card.dart';
 import '../widgets/cart_bottom_sheet.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/utils/responsive_utils.dart';
 
 class RestaurantListPage extends StatelessWidget {
   const RestaurantListPage({super.key});
@@ -16,7 +17,12 @@ class RestaurantListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Food Delivery'),
+        title: Text(
+          'Food Delivery',
+          style: TextStyle(
+            fontSize: ResponsiveUtils.getResponsiveFontSize(context, 20),
+          ),
+        ),
         actions: [
           BlocBuilder<CartBloc, CartState>(
             builder: (context, cartState) {
@@ -59,60 +65,159 @@ class RestaurantListPage extends StatelessWidget {
           ),
         ],
       ),
-      body: BlocBuilder<RestaurantBloc, RestaurantState>(
-        builder: (context, state) {
-          if (state is RestaurantLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (state is RestaurantError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 64,
-                    color: AppTheme.errorColor,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Oops! Something went wrong',
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    state.message,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.read<RestaurantBloc>().add(RefreshRestaurants());
-                    },
-                    child: const Text('Try Again'),
-                  ),
-                ],
-              ),
-            );
-          } else if (state is RestaurantLoaded) {
-            return RefreshIndicator(
-              onRefresh: () async {
-                context.read<RestaurantBloc>().add(RefreshRestaurants());
+      body: ResponsiveBuilder(
+        mobile: (context, constraints) => _buildMobileLayout(context),
+        tablet: (context, constraints) => _buildTabletLayout(context),
+        desktop: (context, constraints) => _buildDesktopLayout(context),
+      ),
+    );
+  }
+
+  Widget _buildMobileLayout(BuildContext context) {
+    return BlocBuilder<RestaurantBloc, RestaurantState>(
+      builder: (context, state) {
+        if (state is RestaurantLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is RestaurantLoaded) {
+          return Padding(
+            padding: ResponsiveUtils.getResponsivePadding(context),
+            child: ListView.builder(
+              itemCount: state.restaurants.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: RestaurantCard(restaurant: state.restaurants[index]),
+                );
               },
-              child: ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: state.restaurants.length,
-                itemBuilder: (context, index) {
-                  final restaurant = state.restaurants[index];
-                  return RestaurantCard(restaurant: restaurant);
-                },
+            ),
+          );
+        } else if (state is RestaurantError) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.error_outline,
+                  size: 64,
+                  color: Colors.grey[400],
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Error: ${state.message}',
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                    color: Colors.grey[600],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    context.read<RestaurantBloc>().add(LoadRestaurants());
+                  },
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          );
+        }
+        return const SizedBox.shrink();
+      },
+    );
+  }
+
+  Widget _buildTabletLayout(BuildContext context) {
+    return BlocBuilder<RestaurantBloc, RestaurantState>(
+      builder: (context, state) {
+        if (state is RestaurantLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is RestaurantLoaded) {
+          return Padding(
+            padding: ResponsiveUtils.getResponsivePadding(context),
+            child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 1.2,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
               ),
-            );
-          }
-          return const SizedBox.shrink();
-        },
+              itemCount: state.restaurants.length,
+              itemBuilder: (context, index) {
+                return RestaurantCard(restaurant: state.restaurants[index]);
+              },
+            ),
+          );
+        } else if (state is RestaurantError) {
+          return _buildErrorState(context, state.message);
+        }
+        return const SizedBox.shrink();
+      },
+    );
+  }
+
+  Widget _buildDesktopLayout(BuildContext context) {
+    return BlocBuilder<RestaurantBloc, RestaurantState>(
+      builder: (context, state) {
+        if (state is RestaurantLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is RestaurantLoaded) {
+          return Center(
+            child: Container(
+              constraints: BoxConstraints(
+                maxWidth: ResponsiveUtils.getMaxContentWidth(context),
+              ),
+              child: Padding(
+                padding: ResponsiveUtils.getResponsivePadding(context),
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    childAspectRatio: 1.1,
+                    crossAxisSpacing: 24,
+                    mainAxisSpacing: 24,
+                  ),
+                  itemCount: state.restaurants.length,
+                  itemBuilder: (context, index) {
+                    return RestaurantCard(restaurant: state.restaurants[index]);
+                  },
+                ),
+              ),
+            ),
+          );
+        } else if (state is RestaurantError) {
+          return _buildErrorState(context, state.message);
+        }
+        return const SizedBox.shrink();
+      },
+    );
+  }
+
+  Widget _buildErrorState(BuildContext context, String message) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.error_outline,
+            size: ResponsiveUtils.isMobile(context) ? 64 : 80,
+            color: Colors.grey[400],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Error: $message',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+              color: Colors.grey[600],
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {
+              context.read<RestaurantBloc>().add(LoadRestaurants());
+            },
+            child: const Text('Retry'),
+          ),
+        ],
       ),
     );
   }

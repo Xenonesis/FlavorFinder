@@ -1,24 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:lottie/lottie.dart';
-import '../bloc/search_bloc.dart';
-import '../widgets/search_filter_sheet.dart';
-import '../widgets/food_item_card.dart';
-import '../widgets/restaurant_card.dart';
-import '../../data/services/advanced_search_service.dart';
-import '../../domain/entities/food_item.dart';
-import '../../domain/entities/restaurant.dart';
+import 'package:flutter/services.dart';
+import '../../../../core/theme/premium_theme.dart';
 
 class AdvancedSearchPage extends StatefulWidget {
-  final List<FoodItem> foodItems;
-  final List<Restaurant> restaurants;
-
-  const AdvancedSearchPage({
-    Key? key,
-    required this.foodItems,
-    required this.restaurants,
-  }) : super(key: key);
+  const AdvancedSearchPage({super.key});
 
   @override
   State<AdvancedSearchPage> createState() => _AdvancedSearchPageState();
@@ -26,488 +11,551 @@ class AdvancedSearchPage extends StatefulWidget {
 
 class _AdvancedSearchPageState extends State<AdvancedSearchPage>
     with TickerProviderStateMixin {
-  final TextEditingController _searchController = TextEditingController();
-  late TabController _tabController;
-  late AnimationController _voiceAnimationController;
+  late AnimationController _searchController;
+  late AnimationController _filterController;
+  late AnimationController _resultsController;
+  late Animation<double> _searchAnimation;
+  late Animation<double> _filterAnimation;
+  late Animation<double> _resultsAnimation;
+
+  final TextEditingController _searchTextController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
   
-  bool _isSearchingFood = true;
+  bool _isVoiceSearching = false;
+  bool _showFilters = false;
+  String _selectedCategory = 'All';
+  double _priceRange = 50.0;
+  double _rating = 4.0;
+  String _sortBy = 'Relevance';
+
+  final List<String> _recentSearches = [
+    'Pizza margherita',
+    'Sushi rolls',
+    'Chicken burger',
+    'Pasta carbonara',
+  ];
+
+  final List<String> _trendingSearches = [
+    'Bubble tea',
+    'Korean BBQ',
+    'Vegan bowls',
+    'Ice cream',
+  ];
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-    _voiceAnimationController = AnimationController(
-      duration: Duration(milliseconds: 1500),
+    _initAnimations();
+    _searchFocusNode.requestFocus();
+  }
+
+  void _initAnimations() {
+    _searchController = AnimationController(
+      duration: const Duration(milliseconds: 600),
       vsync: this,
     );
-    
-    _tabController.addListener(() {
-      setState(() {
-        _isSearchingFood = _tabController.index == 0;
-      });
-    });
+    _filterController = AnimationController(
+      duration: const Duration(milliseconds: 400),
+      vsync: this,
+    );
+    _resultsController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+
+    _searchAnimation = CurvedAnimation(
+      parent: _searchController,
+      curve: Curves.easeOutBack,
+    );
+    _filterAnimation = CurvedAnimation(
+      parent: _filterController,
+      curve: Curves.easeInOut,
+    );
+    _resultsAnimation = CurvedAnimation(
+      parent: _resultsController,
+      curve: Curves.easeOutQuart,
+    );
+
+    _searchController.forward();
   }
 
   @override
   void dispose() {
     _searchController.dispose();
-    _tabController.dispose();
-    _voiceAnimationController.dispose();
+    _filterController.dispose();
+    _resultsController.dispose();
+    _searchTextController.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => SearchBloc()..add(LoadTrendingSearches()),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Search'),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          bottom: TabBar(
-            controller: _tabController,
-            tabs: [
-              Tab(text: 'Food Items'),
-              Tab(text: 'Restaurants'),
-            ],
-          ),
-        ),
-        body: Column(
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
           children: [
-            _buildSearchBar(),
+            _buildSearchHeader(),
+            if (_showFilters) _buildFilters(),
             Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  _buildFoodSearchTab(),
-                  _buildRestaurantSearchTab(),
-                ],
-              ),
+              child: _searchTextController.text.isEmpty
+                  ? _buildSearchSuggestions()
+                  : _buildSearchResults(),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSearchHeader() {
+    return AnimatedBuilder(
+      animation: _searchAnimation,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(0, -50 * (1 - _searchAnimation.value)),
+          child: Opacity(
+            opacity: _searchAnimation.value,
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                      Expanded(child: _buildSearchBar()),
+                      IconButton(
+                        icon: Icon(
+                          _showFilters ? Icons.filter_list : Icons.tune,
+                          color: _showFilters 
+                              ? PremiumTheme.primaryOrange 
+                              : PremiumTheme.textSecondary,
+                        ),
+                        onPressed: _toggleFilters,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  _buildQuickFilters(),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
   Widget _buildSearchBar() {
     return Container(
-      padding: EdgeInsets.all(16),
-      child: Column(
-        children: [
-          BlocBuilder<SearchBloc, SearchState>(
-            builder: (context, state) {
-              return TypeAheadField<String>(
-                textFieldConfiguration: TextFieldConfiguration(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: _isSearchingFood 
-                        ? 'Search for food items...' 
-                        : 'Search for restaurants...',
-                    prefixIcon: Icon(Icons.search),
-                    suffixIcon: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _buildVoiceSearchButton(state),
-                        _buildFilterButton(),
-                      ],
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                  ),
-                  onChanged: (value) {
-                    if (value.isNotEmpty) {
-                      context.read<SearchBloc>()
-                          .add(LoadSearchSuggestions(value));
-                    }
+      margin: const EdgeInsets.symmetric(horizontal: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: PremiumTheme.cardShadow,
+      ),
+      child: TextField(
+        controller: _searchTextController,
+        focusNode: _searchFocusNode,
+        decoration: InputDecoration(
+          hintText: 'Search for food, restaurants...',
+          prefixIcon: const Icon(Icons.search, color: PremiumTheme.primaryOrange),
+          suffixIcon: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (_searchTextController.text.isNotEmpty)
+                IconButton(
+                  icon: const Icon(Icons.clear, color: PremiumTheme.textSecondary),
+                  onPressed: () {
+                    _searchTextController.clear();
+                    setState(() {});
                   },
-                  onSubmitted: (value) => _performSearch(context, value),
                 ),
-                suggestionsCallback: (pattern) async {
-                  if (state is SearchSuggestionsLoaded && 
-                      state.query == pattern) {
-                    return state.suggestions;
-                  }
-                  return [];
-                },
-                itemBuilder: (context, suggestion) {
-                  return ListTile(
-                    leading: Icon(Icons.history, color: Colors.grey),
-                    title: Text(suggestion),
-                    trailing: Icon(Icons.north_west, color: Colors.grey),
-                  );
-                },
-                onSuggestionSelected: (suggestion) {
-                  _searchController.text = suggestion;
-                  _performSearch(context, suggestion);
-                },
-              );
-            },
+              GestureDetector(
+                onTap: _toggleVoiceSearch,
+                child: Container(
+                  margin: const EdgeInsets.only(right: 8),
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: _isVoiceSearching 
+                        ? PremiumTheme.primaryOrange.withOpacity(0.1)
+                        : Colors.transparent,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    _isVoiceSearching ? Icons.mic : Icons.mic_none,
+                    color: _isVoiceSearching 
+                        ? PremiumTheme.primaryOrange 
+                        : PremiumTheme.accentGold,
+                    size: 20,
+                  ),
+                ),
+              ),
+            ],
           ),
-          SizedBox(height: 8),
-          _buildTrendingSearches(),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide.none,
+          ),
+          filled: true,
+          fillColor: Colors.white,
+        ),
+        onChanged: (value) {
+          setState(() {});
+          if (value.isNotEmpty) {
+            _resultsController.forward();
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _buildQuickFilters() {
+    final filters = ['All', 'Pizza', 'Burger', 'Asian', 'Healthy', 'Dessert'];
+    
+    return SizedBox(
+      height: 40,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: filters.length,
+        itemBuilder: (context, index) {
+          final filter = filters[index];
+          final isSelected = _selectedCategory == filter;
+          
+          return GestureDetector(
+            onTap: () {
+              HapticFeedback.lightImpact();
+              setState(() => _selectedCategory = filter);
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              margin: const EdgeInsets.only(right: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: isSelected 
+                    ? PremiumTheme.primaryOrange 
+                    : Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: isSelected 
+                      ? PremiumTheme.primaryOrange 
+                      : Colors.grey.shade300,
+                ),
+              ),
+              child: Text(
+                filter,
+                style: TextStyle(
+                  color: isSelected ? Colors.white : PremiumTheme.textPrimary,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildFilters() {
+    return AnimatedBuilder(
+      animation: _filterAnimation,
+      builder: (context, child) {
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 400),
+          height: _showFilters ? 200 : 0,
+          child: SingleChildScrollView(
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade50,
+                border: Border(
+                  bottom: BorderSide(color: Colors.grey.shade200),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Filters',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 16),
+                  _buildPriceFilter(),
+                  const SizedBox(height: 16),
+                  _buildRatingFilter(),
+                  const SizedBox(height: 16),
+                  _buildSortFilter(),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildPriceFilter() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Price Range: \$${_priceRange.round()}',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        Slider(
+          value: _priceRange,
+          min: 10,
+          max: 100,
+          divisions: 18,
+          activeColor: PremiumTheme.primaryOrange,
+          onChanged: (value) => setState(() => _priceRange = value),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRatingFilter() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Minimum Rating: ${_rating.toStringAsFixed(1)} ⭐',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        Slider(
+          value: _rating,
+          min: 1,
+          max: 5,
+          divisions: 8,
+          activeColor: PremiumTheme.primaryOrange,
+          onChanged: (value) => setState(() => _rating = value),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSortFilter() {
+    final sortOptions = ['Relevance', 'Rating', 'Price', 'Distance', 'Delivery Time'];
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Sort by',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          children: sortOptions.map((option) {
+            final isSelected = _sortBy == option;
+            return GestureDetector(
+              onTap: () {
+                HapticFeedback.lightImpact();
+                setState(() => _sortBy = option);
+              },
+              child: Chip(
+                label: Text(option),
+                backgroundColor: isSelected 
+                    ? PremiumTheme.primaryOrange 
+                    : Colors.grey.shade200,
+                labelStyle: TextStyle(
+                  color: isSelected ? Colors.white : PremiumTheme.textPrimary,
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSearchSuggestions() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (_recentSearches.isNotEmpty) ...[
+            _buildSuggestionSection('Recent Searches', _recentSearches, Icons.history),
+            const SizedBox(height: 24),
+          ],
+          _buildSuggestionSection('Trending Now', _trendingSearches, Icons.trending_up),
         ],
       ),
     );
   }
 
-  Widget _buildVoiceSearchButton(SearchState state) {
-    return BlocListener<SearchBloc, SearchState>(
-      listener: (context, state) {
-        if (state is VoiceSearchListening) {
-          _voiceAnimationController.repeat();
-        } else {
-          _voiceAnimationController.stop();
-        }
-        
-        if (state is VoiceSearchResult) {
-          _searchController.text = state.recognizedText;
-          _performSearch(context, state.recognizedText);
-        }
+  Widget _buildSuggestionSection(String title, List<String> items, IconData icon) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, color: PremiumTheme.primaryOrange, size: 20),
+            const SizedBox(width: 8),
+            Text(
+              title,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        ...items.map((item) => _buildSuggestionItem(item)),
+      ],
+    );
+  }
+
+  Widget _buildSuggestionItem(String suggestion) {
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        _searchTextController.text = suggestion;
+        setState(() {});
       },
-      child: IconButton(
-        onPressed: () {
-          if (state is VoiceSearchListening) {
-            context.read<SearchBloc>().add(StopVoiceSearch());
-          } else {
-            context.read<SearchBloc>().add(StartVoiceSearch());
-          }
-        },
-        icon: AnimatedBuilder(
-          animation: _voiceAnimationController,
-          builder: (context, child) {
-            return Transform.scale(
-              scale: state is VoiceSearchListening 
-                  ? 1.0 + (_voiceAnimationController.value * 0.2)
-                  : 1.0,
-              child: Icon(
-                Icons.mic,
-                color: state is VoiceSearchListening 
-                    ? Colors.red 
-                    : Colors.grey[600],
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        margin: const EdgeInsets.only(bottom: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.search, color: PremiumTheme.textSecondary, size: 20),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                suggestion,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ),
+            const Icon(Icons.north_west, color: PremiumTheme.textSecondary, size: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSearchResults() {
+    return AnimatedBuilder(
+      animation: _resultsAnimation,
+      builder: (context, child) {
+        return ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: 10,
+          itemBuilder: (context, index) {
+            return Transform.translate(
+              offset: Offset(0, 50 * (1 - _resultsAnimation.value)),
+              child: Opacity(
+                opacity: _resultsAnimation.value,
+                child: _buildResultItem(index),
               ),
             );
           },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFilterButton() {
-    return IconButton(
-      onPressed: () => _showFilterSheet(context),
-      icon: Icon(Icons.tune, color: Colors.grey[600]),
-    );
-  }
-
-  Widget _buildTrendingSearches() {
-    return BlocBuilder<SearchBloc, SearchState>(
-      builder: (context, state) {
-        if (state is TrendingSearchesLoaded && state.trendingSearches.isNotEmpty) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Trending Searches',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey[700],
-                ),
-              ),
-              SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 4,
-                children: state.trendingSearches.take(5).map((search) {
-                  return ActionChip(
-                    label: Text(search),
-                    onPressed: () {
-                      _searchController.text = search;
-                      _performSearch(context, search);
-                    },
-                    backgroundColor: Colors.orange.withOpacity(0.1),
-                    labelStyle: TextStyle(color: Colors.orange[700]),
-                  );
-                }).toList(),
-              ),
-            ],
-          );
-        }
-        return SizedBox.shrink();
+        );
       },
     );
   }
 
-  Widget _buildFoodSearchTab() {
-    return BlocBuilder<SearchBloc, SearchState>(
-      builder: (context, state) {
-        if (state is SearchLoading) {
-          return _buildLoadingView();
-        } else if (state is FoodItemSearchResults) {
-          return _buildFoodResults(state);
-        } else if (state is SearchError) {
-          return _buildErrorView(state.message);
-        }
-        return _buildEmptySearchView();
+  Widget _buildResultItem(int index) {
+    final results = [
+      {'name': 'Margherita Pizza', 'restaurant': 'Pizza Palace', 'price': '\$12.99', 'rating': 4.8, 'image': '🍕'},
+      {'name': 'Chicken Burger', 'restaurant': 'Burger House', 'price': '\$8.99', 'rating': 4.6, 'image': '🍔'},
+      {'name': 'Salmon Sushi', 'restaurant': 'Sushi Master', 'price': '\$15.99', 'rating': 4.9, 'image': '🍣'},
+      {'name': 'Beef Tacos', 'restaurant': 'Taco Fiesta', 'price': '\$9.99', 'rating': 4.7, 'image': '🌮'},
+      {'name': 'Caesar Salad', 'restaurant': 'Green Garden', 'price': '\$7.99', 'rating': 4.5, 'image': '🥗'},
+    ];
+
+    final result = results[index % results.length];
+
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.mediumImpact();
+        _openResult(result);
       },
-    );
-  }
-
-  Widget _buildRestaurantSearchTab() {
-    return BlocBuilder<SearchBloc, SearchState>(
-      builder: (context, state) {
-        if (state is SearchLoading) {
-          return _buildLoadingView();
-        } else if (state is RestaurantSearchResults) {
-          return _buildRestaurantResults(state);
-        } else if (state is SearchError) {
-          return _buildErrorView(state.message);
-        }
-        return _buildEmptySearchView();
-      },
-    );
-  }
-
-  Widget _buildLoadingView() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Lottie.asset(
-            'assets/animations/search_loading.json',
-            width: 150,
-            height: 150,
-          ),
-          SizedBox(height: 16),
-          Text(
-            'Searching...',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFoodResults(FoodItemSearchResults state) {
-    if (state.results.isEmpty) {
-      return _buildNoResultsView(state.query);
-    }
-
-    return Column(
-      children: [
-        _buildResultsHeader(state.results.length, state.query),
-        Expanded(
-          child: ListView.builder(
-            padding: EdgeInsets.all(16),
-            itemCount: state.results.length,
-            itemBuilder: (context, index) {
-              final result = state.results[index];
-              return Container(
-                margin: EdgeInsets.only(bottom: 12),
-                child: FoodItemCard(
-                  item: result.item,
-                  onTap: () => _onFoodItemTap(result.item),
-                  highlightedTerms: result.matchedTerms,
-                ),
-              );
-            },
-          ),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: PremiumTheme.cardShadow,
         ),
-      ],
-    );
-  }
-
-  Widget _buildRestaurantResults(RestaurantSearchResults state) {
-    if (state.results.isEmpty) {
-      return _buildNoResultsView(state.query);
-    }
-
-    return Column(
-      children: [
-        _buildResultsHeader(state.results.length, state.query),
-        Expanded(
-          child: ListView.builder(
-            padding: EdgeInsets.all(16),
-            itemCount: state.results.length,
-            itemBuilder: (context, index) {
-              final result = state.results[index];
-              return Container(
-                margin: EdgeInsets.only(bottom: 12),
-                child: RestaurantCard(
-                  restaurant: result.item,
-                  onTap: () => _onRestaurantTap(result.item),
-                  highlightedTerms: result.matchedTerms,
-                ),
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildResultsHeader(int count, String query) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        children: [
-          Text(
-            '$count results for "$query"',
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              color: Colors.grey[700],
-            ),
-          ),
-          Spacer(),
-          TextButton.icon(
-            onPressed: () => _showSortOptions(context),
-            icon: Icon(Icons.sort, size: 18),
-            label: Text('Sort'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNoResultsView(String query) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Lottie.asset(
-            'assets/animations/no_results.json',
-            width: 200,
-            height: 200,
-          ),
-          SizedBox(height: 16),
-          Text(
-            'No results found for "$query"',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          SizedBox(height: 8),
-          Text(
-            'Try adjusting your search or filters',
-            style: TextStyle(color: Colors.grey[600]),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildErrorView(String message) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.error_outline, size: 64, color: Colors.red),
-          SizedBox(height: 16),
-          Text(
-            'Search Error',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          SizedBox(height: 8),
-          Text(
-            message,
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.grey[600]),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEmptySearchView() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.search, size: 64, color: Colors.grey),
-          SizedBox(height: 16),
-          Text(
-            'Start typing to search',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          SizedBox(height: 8),
-          Text(
-            'Find your favorite food or restaurants',
-            style: TextStyle(color: Colors.grey[600]),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _performSearch(BuildContext context, String query) {
-    if (query.trim().isEmpty) return;
-
-    if (_isSearchingFood) {
-      context.read<SearchBloc>().add(SearchFoodItems(
-        query: query,
-        items: widget.foodItems,
-      ));
-    } else {
-      context.read<SearchBloc>().add(SearchRestaurants(
-        query: query,
-        restaurants: widget.restaurants,
-      ));
-    }
-  }
-
-  void _showFilterSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => SearchFilterSheet(
-        currentFilters: context.read<SearchBloc>().currentFilters,
-        onFiltersApplied: (filters) {
-          context.read<SearchBloc>().add(UpdateSearchFilters(filters));
-          // Re-run search with new filters if there's a current query
-          if (_searchController.text.isNotEmpty) {
-            _performSearch(context, _searchController.text);
-          }
-        },
-      ),
-    );
-  }
-
-  void _showSortOptions(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => Container(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+        child: Row(
           children: [
-            Text(
-              'Sort by',
-              style: Theme.of(context).textTheme.titleLarge,
+            Container(
+              width: 80,
+              height: 80,
+              margin: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                gradient: PremiumTheme.cardGradient,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Center(
+                child: Text(
+                  result['image'] as String,
+                  style: const TextStyle(fontSize: 32),
+                ),
+              ),
             ),
-            SizedBox(height: 16),
-            ListTile(
-              leading: Icon(Icons.star),
-              title: Text('Rating'),
-              onTap: () => _applySorting('rating', false),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      result['name'] as String,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      result['restaurant'] as String,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: PremiumTheme.textSecondary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        const Icon(Icons.star, color: PremiumTheme.success, size: 16),
+                        const SizedBox(width: 4),
+                        Text(
+                          result['rating'].toString(),
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: PremiumTheme.success,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const Spacer(),
+                        Text(
+                          result['price'] as String,
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: PremiumTheme.primaryOrange,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ),
-            ListTile(
-              leading: Icon(Icons.attach_money),
-              title: Text('Price: Low to High'),
-              onTap: () => _applySorting('price', true),
-            ),
-            ListTile(
-              leading: Icon(Icons.money_off),
-              title: Text('Price: High to Low'),
-              onTap: () => _applySorting('price', false),
-            ),
-            ListTile(
-              leading: Icon(Icons.trending_up),
-              title: Text('Popularity'),
-              onTap: () => _applySorting('popularity', false),
+            IconButton(
+              icon: const Icon(Icons.add_circle, color: PremiumTheme.primaryOrange),
+              onPressed: () => _addToCart(result),
             ),
           ],
         ),
@@ -515,29 +563,45 @@ class _AdvancedSearchPageState extends State<AdvancedSearchPage>
     );
   }
 
-  void _applySorting(String sortBy, bool ascending) {
-    Navigator.pop(context);
-    
-    final currentFilters = context.read<SearchBloc>().currentFilters;
-    final newFilters = (currentFilters ?? SearchFilters()).copyWith(
-      sortBy: sortBy,
-      ascending: ascending,
-    );
-    
-    context.read<SearchBloc>().add(UpdateSearchFilters(newFilters));
-    
-    if (_searchController.text.isNotEmpty) {
-      _performSearch(context, _searchController.text);
+  void _toggleFilters() {
+    HapticFeedback.lightImpact();
+    setState(() => _showFilters = !_showFilters);
+    if (_showFilters) {
+      _filterController.forward();
+    } else {
+      _filterController.reverse();
     }
   }
 
-  void _onFoodItemTap(FoodItem item) {
-    // Navigate to food item details
-    Navigator.pop(context, item);
+  void _toggleVoiceSearch() {
+    HapticFeedback.mediumImpact();
+    setState(() => _isVoiceSearching = !_isVoiceSearching);
+    
+    if (_isVoiceSearching) {
+      // Start voice recognition
+      Future.delayed(const Duration(seconds: 3), () {
+        if (mounted) {
+          setState(() => _isVoiceSearching = false);
+          _searchTextController.text = 'Pizza margherita';
+        }
+      });
+    }
   }
 
-  void _onRestaurantTap(Restaurant restaurant) {
-    // Navigate to restaurant details
-    Navigator.pop(context, restaurant);
+  void _openResult(Map<String, dynamic> result) {
+    // Navigate to item details
+  }
+
+  void _addToCart(Map<String, dynamic> result) {
+    HapticFeedback.lightImpact();
+    // Add item to cart
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${result['name']} added to cart'),
+        backgroundColor: PremiumTheme.success,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    );
   }
 }

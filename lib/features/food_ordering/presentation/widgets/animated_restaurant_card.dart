@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import '../../domain/entities/restaurant.dart';
+import '../../../../core/theme/premium_theme.dart';
 
 class AnimatedRestaurantCard extends StatefulWidget {
-  final Restaurant restaurant;
+  final Map<String, dynamic> restaurant;
   final VoidCallback onTap;
+  final int index;
 
   const AnimatedRestaurantCard({
-    Key? key,
+    super.key,
     required this.restaurant,
     required this.onTap,
-  }) : super(key: key);
+    this.index = 0,
+  });
 
   @override
   State<AnimatedRestaurantCard> createState() => _AnimatedRestaurantCardState();
@@ -19,39 +20,43 @@ class AnimatedRestaurantCard extends StatefulWidget {
 
 class _AnimatedRestaurantCardState extends State<AnimatedRestaurantCard>
     with TickerProviderStateMixin {
-  late AnimationController _scaleController;
+  late AnimationController _hoverController;
   late AnimationController _favoriteController;
-  late Animation<double> _scaleAnimation;
+  late Animation<double> _hoverAnimation;
   late Animation<double> _favoriteAnimation;
   
   bool _isFavorite = false;
+  bool _isHovered = false;
 
   @override
   void initState() {
     super.initState();
-    
-    _scaleController = AnimationController(
-      duration: Duration(milliseconds: 150),
+    _initAnimations();
+  }
+
+  void _initAnimations() {
+    _hoverController = AnimationController(
+      duration: const Duration(milliseconds: 200),
       vsync: this,
     );
-    
     _favoriteController = AnimationController(
-      duration: Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 300),
       vsync: this,
     );
 
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
-      CurvedAnimation(parent: _scaleController, curve: Curves.easeInOut),
+    _hoverAnimation = CurvedAnimation(
+      parent: _hoverController,
+      curve: Curves.easeInOut,
     );
-
-    _favoriteAnimation = Tween<double>(begin: 1.0, end: 1.3).animate(
-      CurvedAnimation(parent: _favoriteController, curve: Curves.elasticOut),
+    _favoriteAnimation = CurvedAnimation(
+      parent: _favoriteController,
+      curve: Curves.elasticOut,
     );
   }
 
   @override
   void dispose() {
-    _scaleController.dispose();
+    _hoverController.dispose();
     _favoriteController.dispose();
     super.dispose();
   }
@@ -59,41 +64,37 @@ class _AnimatedRestaurantCardState extends State<AnimatedRestaurantCard>
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: _scaleAnimation,
+      animation: _hoverAnimation,
       builder: (context, child) {
         return Transform.scale(
-          scale: _scaleAnimation.value,
-          child: Container(
-            margin: EdgeInsets.only(bottom: 16),
-            child: Material(
-              elevation: 4,
-              borderRadius: BorderRadius.circular(16),
-              shadowColor: Colors.black.withOpacity(0.1),
-              child: InkWell(
-                onTap: () {
-                  _scaleController.forward().then((_) {
-                    _scaleController.reverse();
-                    widget.onTap();
-                  });
-                  HapticFeedback.selectionClick();
-                },
-                onTapDown: (_) => _scaleController.forward(),
-                onTapUp: (_) => _scaleController.reverse(),
-                onTapCancel: () => _scaleController.reverse(),
-                borderRadius: BorderRadius.circular(16),
-                child: Container(
-                  height: 120,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    color: Colors.white,
+          scale: 1.0 + (_hoverAnimation.value * 0.02),
+          child: GestureDetector(
+            onTap: () {
+              HapticFeedback.mediumImpact();
+              widget.onTap();
+            },
+            onTapDown: (_) => _onHover(true),
+            onTapUp: (_) => _onHover(false),
+            onTapCancel: () => _onHover(false),
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08 + (0.04 * _hoverAnimation.value)),
+                    blurRadius: 12 + (8 * _hoverAnimation.value),
+                    offset: Offset(0, 4 + (4 * _hoverAnimation.value)),
                   ),
-                  child: Row(
-                    children: [
-                      _buildImageSection(),
-                      Expanded(child: _buildContentSection()),
-                    ],
-                  ),
-                ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildImageSection(),
+                  _buildContentSection(),
+                ],
               ),
             ),
           ),
@@ -103,103 +104,161 @@ class _AnimatedRestaurantCardState extends State<AnimatedRestaurantCard>
   }
 
   Widget _buildImageSection() {
+    return Stack(
+      children: [
+        // Main image container
+        Container(
+          height: 180,
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            gradient: LinearGradient(
+              colors: [
+                PremiumTheme.primaryOrange.withOpacity(0.1),
+                PremiumTheme.accentGold.withOpacity(0.1),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: Center(
+            child: Hero(
+              tag: 'restaurant_${widget.index}',
+              child: Text(
+                widget.restaurant['image'] ?? '🍽️',
+                style: const TextStyle(fontSize: 64),
+              ),
+            ),
+          ),
+        ),
+        
+        // Gradient overlay
+        Container(
+          height: 180,
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            gradient: LinearGradient(
+              colors: [
+                Colors.transparent,
+                Colors.black.withOpacity(0.1),
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
+        
+        // Top badges
+        Positioned(
+          top: 12,
+          left: 12,
+          child: _buildPromoBadge(),
+        ),
+        
+        // Favorite button
+        Positioned(
+          top: 12,
+          right: 12,
+          child: _buildFavoriteButton(),
+        ),
+        
+        // Delivery time badge
+        Positioned(
+          bottom: 12,
+          right: 12,
+          child: _buildDeliveryTimeBadge(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPromoBadge() {
+    if (widget.restaurant['hasPromo'] != true) {
+      return const SizedBox.shrink();
+    }
+    
     return Container(
-      width: 120,
-      height: 120,
-      child: Stack(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: PremiumTheme.error,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: PremiumTheme.cardShadow,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.horizontal(left: Radius.circular(16)),
-            child: Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Colors.orange.shade200,
-                    Colors.orange.shade400,
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              child: widget.restaurant.imageUrl.isNotEmpty
-                  ? CachedNetworkImage(
-                      imageUrl: widget.restaurant.imageUrl,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Center(
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                          strokeWidth: 2,
-                        ),
-                      ),
-                      errorWidget: (context, url, error) => Center(
-                        child: Icon(
-                          Icons.restaurant,
-                          size: 40,
-                          color: Colors.white,
-                        ),
-                      ),
-                    )
-                  : Center(
-                      child: Icon(
-                        Icons.restaurant,
-                        size: 40,
-                        color: Colors.white,
-                      ),
-                    ),
+          const Icon(Icons.local_fire_department, 
+              color: Colors.white, size: 12),
+          const SizedBox(width: 4),
+          Text(
+            '20% OFF',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 10,
             ),
           ),
-          Positioned(
-            top: 8,
-            left: 8,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFavoriteButton() {
+    return AnimatedBuilder(
+      animation: _favoriteAnimation,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: 1.0 + (_favoriteAnimation.value * 0.2),
+          child: GestureDetector(
+            onTap: () {
+              HapticFeedback.lightImpact();
+              setState(() => _isFavorite = !_isFavorite);
+              if (_isFavorite) {
+                _favoriteController.forward();
+              } else {
+                _favoriteController.reverse();
+              }
+            },
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.7),
-                borderRadius: BorderRadius.circular(12),
+                color: Colors.white.withOpacity(0.9),
+                shape: BoxShape.circle,
+                boxShadow: PremiumTheme.cardShadow,
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.star,
-                    size: 12,
-                    color: Colors.amber,
-                  ),
-                  SizedBox(width: 2),
-                  Text(
-                    widget.restaurant.rating.toStringAsFixed(1),
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
+              child: Icon(
+                _isFavorite ? Icons.favorite : Icons.favorite_border,
+                color: _isFavorite ? PremiumTheme.error : PremiumTheme.textSecondary,
+                size: 18,
               ),
             ),
           ),
-          if (widget.restaurant.deliveryFee == 0)
-            Positioned(
-              bottom: 8,
-              left: 8,
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: Colors.green,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  'FREE',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 8,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
+        );
+      },
+    );
+  }
+
+  Widget _buildDeliveryTimeBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.9),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: PremiumTheme.cardShadow,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.access_time, 
+              color: PremiumTheme.primaryOrange, size: 12),
+          const SizedBox(width: 4),
+          Text(
+            widget.restaurant['time'] ?? '25-30 min',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              fontWeight: FontWeight.w600,
+              fontSize: 10,
             ),
+          ),
         ],
       ),
     );
@@ -207,100 +266,89 @@ class _AnimatedRestaurantCardState extends State<AnimatedRestaurantCard>
 
   Widget _buildContentSection() {
     return Padding(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          // Restaurant name and rating
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      widget.restaurant.name,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+              Expanded(
+                child: Text(
+                  widget.restaurant['name'] ?? 'Restaurant Name',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
-                  AnimatedBuilder(
-                    animation: _favoriteAnimation,
-                    builder: (context, child) {
-                      return Transform.scale(
-                        scale: _favoriteAnimation.value,
-                        child: GestureDetector(
-                          onTap: _toggleFavorite,
-                          child: Icon(
-                            _isFavorite ? Icons.favorite : Icons.favorite_border,
-                            color: _isFavorite ? Colors.red : Colors.grey[400],
-                            size: 20,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              SizedBox(height: 4),
+              _buildRatingChip(),
+            ],
+          ),
+          
+          const SizedBox(height: 8),
+          
+          // Cuisine and price range
+          Row(
+            children: [
+              Icon(
+                Icons.restaurant_menu,
+                color: PremiumTheme.textSecondary,
+                size: 16,
+              ),
+              const SizedBox(width: 4),
               Text(
-                widget.restaurant.cuisine,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[600],
+                widget.restaurant['cuisine'] ?? 'International',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: PremiumTheme.textSecondary,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Text(
+                '•',
+                style: TextStyle(color: PremiumTheme.textSecondary),
+              ),
+              const SizedBox(width: 16),
+              Text(
+                '\$\$',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: PremiumTheme.primaryOrange,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ],
           ),
-          Row(
-            children: [
-              _buildInfoChip(
-                Icons.access_time,
-                '${widget.restaurant.deliveryTime} min',
-                Colors.blue,
-              ),
-              SizedBox(width: 8),
-              _buildInfoChip(
-                Icons.delivery_dining,
-                widget.restaurant.deliveryFee == 0
-                    ? 'Free'
-                    : '\$${widget.restaurant.deliveryFee.toStringAsFixed(2)}',
-                widget.restaurant.deliveryFee == 0 ? Colors.green : Colors.orange,
-              ),
-            ],
-          ),
+          
+          const SizedBox(height: 12),
+          
+          // Features row
+          _buildFeaturesRow(),
         ],
       ),
     );
   }
 
-  Widget _buildInfoChip(IconData icon, String text, Color color) {
+  Widget _buildRatingChip() {
+    final rating = widget.restaurant['rating'] ?? 4.5;
+    
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: PremiumTheme.success.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            size: 12,
-            color: color,
-          ),
-          SizedBox(width: 4),
+          const Icon(Icons.star, color: PremiumTheme.success, size: 14),
+          const SizedBox(width: 4),
           Text(
-            text,
-            style: TextStyle(
-              fontSize: 10,
-              color: color,
-              fontWeight: FontWeight.w600,
+            rating.toString(),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: PremiumTheme.success,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ],
@@ -308,15 +356,171 @@ class _AnimatedRestaurantCardState extends State<AnimatedRestaurantCard>
     );
   }
 
-  void _toggleFavorite() {
-    setState(() {
-      _isFavorite = !_isFavorite;
-    });
+  Widget _buildFeaturesRow() {
+    final features = [
+      {'icon': Icons.delivery_dining, 'text': 'Free Delivery'},
+      {'icon': Icons.access_time, 'text': 'Fast'},
+      {'icon': Icons.verified, 'text': 'Verified'},
+    ];
     
-    _favoriteController.forward().then((_) {
-      _favoriteController.reverse();
-    });
-    
-    HapticFeedback.lightImpact();
+    return Row(
+      children: features.map((feature) {
+        return Container(
+          margin: const EdgeInsets.only(right: 12),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                feature['icon'] as IconData,
+                color: PremiumTheme.primaryOrange,
+                size: 14,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                feature['text'] as String,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: PremiumTheme.textSecondary,
+                  fontSize: 11,
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  void _onHover(bool isHovered) {
+    setState(() => _isHovered = isHovered);
+    if (isHovered) {
+      _hoverController.forward();
+    } else {
+      _hoverController.reverse();
+    }
+  }
+}
+
+class RestaurantCardShimmer extends StatefulWidget {
+  const RestaurantCardShimmer({super.key});
+
+  @override
+  State<RestaurantCardShimmer> createState() => _RestaurantCardShimmerState();
+}
+
+class _RestaurantCardShimmerState extends State<RestaurantCardShimmer>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _shimmerController;
+  late Animation<double> _shimmerAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _shimmerController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    );
+    _shimmerAnimation = CurvedAnimation(
+      parent: _shimmerController,
+      curve: Curves.easeInOut,
+    );
+    _shimmerController.repeat();
+  }
+
+  @override
+  void dispose() {
+    _shimmerController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _shimmerAnimation,
+      builder: (context, child) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: PremiumTheme.cardShadow,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Image shimmer
+              Container(
+                height: 180,
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.grey.shade300,
+                      Colors.grey.shade100,
+                      Colors.grey.shade300,
+                    ],
+                    stops: [
+                      0.0,
+                      _shimmerAnimation.value,
+                      1.0,
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+              ),
+              
+              // Content shimmer
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 20,
+                      width: double.infinity * 0.7,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      height: 14,
+                      width: double.infinity * 0.5,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Container(
+                          height: 12,
+                          width: 60,
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade300,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Container(
+                          height: 12,
+                          width: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade300,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

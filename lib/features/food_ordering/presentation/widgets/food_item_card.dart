@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../domain/entities/food_item.dart';
 import 'add_to_cart_dialog.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/enhanced_app_theme.dart';
 import '../../../../core/utils/responsive_utils.dart';
 
 class FoodItemCard extends StatelessWidget {
@@ -103,7 +103,7 @@ class FoodItemCard extends StatelessWidget {
                 height: ResponsiveUtils.isMobile(context) ? 16 : 18,
                 margin: const EdgeInsets.only(right: 8),
                 decoration: BoxDecoration(
-                  color: AppTheme.successColor,
+                  color: EnhancedAppTheme.successColor,
                   borderRadius: BorderRadius.circular(2),
                 ),
                 child: Icon(
@@ -147,15 +147,15 @@ class FoodItemCard extends StatelessWidget {
                   vertical: ResponsiveUtils.isMobile(context) ? 2 : 4,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.orange.withOpacity(0.1),
+                  color: EnhancedAppTheme.primaryColor.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.orange.withOpacity(0.3)),
+                  border: Border.all(color: EnhancedAppTheme.primaryColor.withOpacity(0.2)),
                 ),
                 child: Text(
                   allergen,
                   style: TextStyle(
                     fontSize: ResponsiveUtils.getResponsiveFontSize(context, 10),
-                    color: Colors.orange[700],
+                    color: EnhancedAppTheme.primaryColor,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -175,7 +175,7 @@ class FoodItemCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
                     fontWeight: FontWeight.bold,
-                    color: AppTheme.primaryColor,
+                    color: EnhancedAppTheme.primaryColor,
                   ),
                 ),
                 if (foodItem.rating > 0) ...[
@@ -203,7 +203,7 @@ class FoodItemCard extends StatelessWidget {
             ElevatedButton(
               onPressed: () => _showAddToCartDialog(context),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryColor,
+                backgroundColor: EnhancedAppTheme.primaryColor,
                 foregroundColor: Colors.white,
                 padding: EdgeInsets.symmetric(
                   horizontal: ResponsiveUtils.isMobile(context) ? 16 : 20,

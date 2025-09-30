@@ -90,7 +90,7 @@ class EnhancedRestaurantCard extends StatelessWidget {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: restaurant.isOpen ? Colors.green : Colors.red,
+                            color: restaurant.isOpen ? EnhancedAppTheme.successColor : EnhancedAppTheme.errorColor,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(

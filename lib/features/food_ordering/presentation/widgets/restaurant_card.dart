@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../domain/entities/restaurant.dart';
 import '../pages/restaurant_menu_page.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/enhanced_app_theme.dart';
 import '../../../../core/utils/responsive_utils.dart';
 
 class RestaurantCard extends StatelessWidget {
@@ -85,7 +85,7 @@ class RestaurantCard extends StatelessWidget {
                           vertical: ResponsiveUtils.isMobile(context) ? 8 : 10,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.red,
+                          color: EnhancedAppTheme.errorColor,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
@@ -163,7 +163,7 @@ class RestaurantCard extends StatelessWidget {
                       Icon(
                         Icons.access_time,
                         size: ResponsiveUtils.isMobile(context) ? 16 : 18,
-                        color: restaurant.isOpen ? AppTheme.primaryColor : Colors.grey[400],
+                        color: restaurant.isOpen ? EnhancedAppTheme.primaryColor : Colors.grey[400],
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -177,7 +177,7 @@ class RestaurantCard extends StatelessWidget {
                       Icon(
                         Icons.delivery_dining,
                         size: ResponsiveUtils.isMobile(context) ? 16 : 18,
-                        color: restaurant.isOpen ? AppTheme.primaryColor : Colors.grey[400],
+                        color: restaurant.isOpen ? EnhancedAppTheme.primaryColor : Colors.grey[400],
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -185,7 +185,7 @@ class RestaurantCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
                           fontWeight: FontWeight.w600,
-                          color: restaurant.isOpen ? AppTheme.primaryColor : Colors.grey[400],
+                          color: restaurant.isOpen ? EnhancedAppTheme.primaryColor : Colors.grey[400],
                         ),
                       ),
                     ],

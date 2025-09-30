@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../data/services/advanced_search_service.dart';
+import '../../../../core/theme/enhanced_app_theme.dart';
 
 class SearchFilterSheet extends StatefulWidget {
   final SearchFilters? currentFilters;
@@ -260,11 +261,11 @@ class _SearchFilterSheetState extends State<SearchFilterSheet> {
                     _selectedCategories.add(category);
                   } else {
                     _selectedCategories.remove(category);
-                  }
+                  })
                 });
               },
-              selectedColor: Colors.orange.withOpacity(0.2),
-              checkmarkColor: Colors.orange,
+              selectedColor: EnhancedAppTheme.primaryColor.withOpacity(0.1),
+              checkmarkColor: EnhancedAppTheme.primaryColor,
             );
           }).toList(),
         ),

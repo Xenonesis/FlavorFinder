@@ -19,7 +19,7 @@ class _PromotionalBannersState extends State<PromotionalBanners> {
       subtitle: 'On orders over \$25',
       description: 'Get free delivery on all orders above \$25. Limited time offer!',
       gradient: const LinearGradient(
-        colors: [Color(0xFF4CAF50), Color(0xFF8BC34A)],
+        colors: [Color(0xFF10B981), Color(0xFF059669)], // Modern green gradient
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ),
@@ -30,7 +30,7 @@ class _PromotionalBannersState extends State<PromotionalBanners> {
       subtitle: 'First Order Discount',
       description: 'New users get 20% off on their first order. Use code: WELCOME20',
       gradient: const LinearGradient(
-        colors: [Color(0xFFFF9800), Color(0xFFFFB74D)],
+        colors: [Color(0xFFF59E0B), Color(0xFFEAB308)], // Modern amber gradient
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ),
@@ -41,7 +41,7 @@ class _PromotionalBannersState extends State<PromotionalBanners> {
       subtitle: '3-6 PM Daily',
       description: 'Special discounts on selected restaurants during happy hours',
       gradient: const LinearGradient(
-        colors: [Color(0xFF9C27B0), Color(0xFFBA68C8)],
+        colors: [Color(0xFF8B5CF6), Color(0xFFA78BFA)], // Modern purple gradient
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ),

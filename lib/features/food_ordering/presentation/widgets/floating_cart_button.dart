@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../../../core/theme/enhanced_app_theme.dart';
 
 class FloatingCartButton extends StatefulWidget {
   final int itemCount;
@@ -108,7 +109,7 @@ class _FloatingCartButtonState extends State<FloatingCartButton>
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      Colors.orange.shade400,
+                      EnhancedAppTheme.primaryColor,
                       Colors.deepOrange.shade600,
                     ],
                     begin: Alignment.topLeft,
@@ -117,7 +118,7 @@ class _FloatingCartButtonState extends State<FloatingCartButton>
                   borderRadius: BorderRadius.circular(30),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.orange.withOpacity(0.4),
+                      color: EnhancedAppTheme.primaryColor.withOpacity(0.3),
                       blurRadius: 15,
                       offset: Offset(0, 8),
                     ),
@@ -160,7 +161,7 @@ class _FloatingCartButtonState extends State<FloatingCartButton>
                           width: 24,
                           height: 24,
                           decoration: BoxDecoration(
-                            color: Colors.red,
+                            color: EnhancedAppTheme.errorColor,
                             shape: BoxShape.circle,
                             border: Border.all(
                               color: Theme.of(context).colorScheme.surface,
@@ -168,7 +169,7 @@ class _FloatingCartButtonState extends State<FloatingCartButton>
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.red.withOpacity(0.3),
+                                color: EnhancedAppTheme.errorColor.withOpacity(0.1),
                                 blurRadius: 6,
                                 offset: Offset(0, 2),
                               ),

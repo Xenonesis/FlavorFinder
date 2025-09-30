@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  static const Color primaryColor = Color(0xFFFF6B35);
-  static const Color secondaryColor = Color(0xFF2E3A59);
-  static const Color backgroundColor = Color(0xFFF8F9FA);
-  static const Color surfaceColor = Colors.white;
-  static const Color errorColor = Color(0xFFE74C3C);
-  static const Color successColor = Color(0xFF27AE60);
-  static const Color textPrimary = Color(0xFF2C3E50);
-  static const Color textSecondary = Color(0xFF7F8C8D);
-  static const Color borderColor = Color(0xFFE8E8E8);
-  static const Color darkBackgroundColor = Color(0xFF1A1A1A);
-  static const Color darkSurfaceColor = Color(0xFF2D2D2D);
-  static const Color darkTextPrimary = Color(0xFFE0E0E0);
-  static const Color darkTextSecondary = Color(0xFFB0B0B0);
+  static const Color primaryColor = Color(0xFF6366F1); // Modern indigo
+  static const Color secondaryColor = Color(0xFF8B5CF6); // Modern purple
+  static const Color backgroundColor = Color(0xFFFAFAFC); // Ultra-clean background
+  static const Color surfaceColor = Color(0xFFFFFFFF); // Pure white
+  static const Color errorColor = Color(0xFFEF4444); // Modern red
+  static const Color successColor = Color(0xFF10B981); // Modern green
+  static const Color textPrimary = Color(0xFF0F172A); // Rich dark
+  static const Color textSecondary = Color(0xFF64748B); // Modern slate
+  static const Color borderColor = Color(0xFFE2E8F0); // Light slate border
+  static const Color darkBackgroundColor = Color(0xFF0F172A); // Deep slate
+  static const Color darkSurfaceColor = Color(0xFF1E293B); // Dark slate surface
+  static const Color darkTextPrimary = Color(0xFFF1F5F9); // Almost white
+  static const Color darkTextSecondary = Color(0xFFCBD5E1); // Light slate
   static const Color darkBorderColor = Color(0xFF404040);
 
   static ThemeData get lightTheme {

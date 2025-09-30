@@ -213,6 +213,310 @@ class FoodCategoriesData {
     ];
   }
 
+  static List<FoodItem> getBurgers() {
+    return [
+      FoodItem(
+        id: 'burger1',
+        name: 'Classic Cheeseburger',
+        description: 'Beef patty with cheese, lettuce, tomato, and special sauce',
+        price: 12.99,
+        imageUrl: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400&h=300&fit=crop',
+        category: 'Burgers',
+        rating: 4.5,
+        isVegetarian: false,
+        allergens: ['Gluten', 'Dairy'],
+      ),
+      FoodItem(
+        id: 'burger2',
+        name: 'Double Bacon Burger',
+        description: 'Double beef patty with crispy bacon and cheddar cheese',
+        price: 16.99,
+        imageUrl: 'https://images.unsplash.com/photo-1553979459-d2229ba7433a?w=400&h=300&fit=crop',
+        category: 'Burgers',
+        rating: 4.7,
+        isVegetarian: false,
+        allergens: ['Gluten', 'Dairy'],
+      ),
+      FoodItem(
+        id: 'burger3',
+        name: 'Mushroom Swiss Burger',
+        description: 'Beef patty with sautéed mushrooms and Swiss cheese',
+        price: 14.99,
+        imageUrl: 'https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?w=400&h=300&fit=crop',
+        category: 'Burgers',
+        rating: 4.6,
+        isVegetarian: false,
+        allergens: ['Gluten', 'Dairy'],
+      ),
+    ];
+  }
+
+  static List<FoodItem> getPizzas() {
+    return [
+      FoodItem(
+        id: 'pizza1',
+        name: 'Margherita Pizza',
+        description: 'Fresh mozzarella, tomato sauce, and basil',
+        price: 16.99,
+        imageUrl: 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=400&h=300&fit=crop',
+        category: 'Pizza',
+        rating: 4.8,
+        isVegetarian: true,
+        allergens: ['Gluten', 'Dairy'],
+      ),
+      FoodItem(
+        id: 'pizza2',
+        name: 'Pepperoni Pizza',
+        description: 'Classic pepperoni with mozzarella cheese',
+        price: 18.99,
+        imageUrl: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop',
+        category: 'Pizza',
+        rating: 4.7,
+        isVegetarian: false,
+        allergens: ['Gluten', 'Dairy'],
+      ),
+      FoodItem(
+        id: 'pizza3',
+        name: 'Supreme Pizza',
+        description: 'Pepperoni, sausage, peppers, onions, and mushrooms',
+        price: 22.99,
+        imageUrl: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&h=300&fit=crop',
+        category: 'Pizza',
+        rating: 4.9,
+        isVegetarian: false,
+        allergens: ['Gluten', 'Dairy'],
+      ),
+    ];
+  }
+
+  static List<FoodItem> getSalads() {
+    return [
+      FoodItem(
+        id: 'salad1',
+        name: 'Caesar Salad',
+        description: 'Crisp romaine lettuce with parmesan and croutons',
+        price: 9.99,
+        imageUrl: 'https://images.unsplash.com/photo-1550304943-4f24f54ddde9?w=400&h=300&fit=crop',
+        category: 'Salads',
+        rating: 4.4,
+        isVegetarian: true,
+        allergens: ['Gluten', 'Dairy'],
+      ),
+      FoodItem(
+        id: 'salad2',
+        name: 'Greek Salad',
+        description: 'Mixed greens with feta cheese, olives, and tomatoes',
+        price: 11.99,
+        imageUrl: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&h=300&fit=crop',
+        category: 'Salads',
+        rating: 4.6,
+        isVegetarian: true,
+        allergens: ['Dairy'],
+      ),
+      FoodItem(
+        id: 'salad3',
+        name: 'Chicken Caesar Salad',
+        description: 'Caesar salad topped with grilled chicken breast',
+        price: 13.99,
+        imageUrl: 'https://images.unsplash.com/photo-1551248429-40975aa4de74?w=400&h=300&fit=crop',
+        category: 'Salads',
+        rating: 4.5,
+        isVegetarian: false,
+        allergens: ['Gluten', 'Dairy'],
+      ),
+    ];
+  }
+
+  static List<FoodItem> getPasta() {
+    return [
+      FoodItem(
+        id: 'pasta1',
+        name: 'Spaghetti Carbonara',
+        description: 'Creamy pasta with bacon, eggs, and parmesan',
+        price: 16.99,
+        imageUrl: 'https://images.unsplash.com/photo-1621996346565-e3dbc353d2e5?w=400&h=300&fit=crop',
+        category: 'Pasta',
+        rating: 4.8,
+        isVegetarian: false,
+        allergens: ['Gluten', 'Dairy', 'Eggs'],
+      ),
+      FoodItem(
+        id: 'pasta2',
+        name: 'Penne Arrabbiata',
+        description: 'Spicy tomato sauce with garlic and red pepper flakes',
+        price: 14.99,
+        imageUrl: 'https://images.unsplash.com/photo-1563379091339-03246963d51a?w=400&h=300&fit=crop',
+        category: 'Pasta',
+        rating: 4.5,
+        isVegetarian: true,
+        allergens: ['Gluten'],
+      ),
+      FoodItem(
+        id: 'pasta3',
+        name: 'Fettuccine Alfredo',
+        description: 'Rich and creamy white sauce with parmesan cheese',
+        price: 15.99,
+        imageUrl: 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=400&h=300&fit=crop',
+        category: 'Pasta',
+        rating: 4.6,
+        isVegetarian: true,
+        allergens: ['Gluten', 'Dairy'],
+      ),
+    ];
+  }
+
+  static List<FoodItem> getSeafood() {
+    return [
+      FoodItem(
+        id: 'seafood1',
+        name: 'Grilled Salmon',
+        description: 'Fresh Atlantic salmon with lemon and herbs',
+        price: 22.99,
+        imageUrl: 'https://images.unsplash.com/photo-1544943910-4c1dc44aab44?w=400&h=300&fit=crop',
+        category: 'Seafood',
+        rating: 4.8,
+        isVegetarian: false,
+        allergens: ['Fish'],
+      ),
+      FoodItem(
+        id: 'seafood2',
+        name: 'Shrimp Scampi',
+        description: 'Garlic butter shrimp over linguine pasta',
+        price: 19.99,
+        imageUrl: 'https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=400&h=300&fit=crop',
+        category: 'Seafood',
+        rating: 4.7,
+        isVegetarian: false,
+        allergens: ['Shellfish', 'Gluten', 'Dairy'],
+      ),
+      FoodItem(
+        id: 'seafood3',
+        name: 'Fish and Chips',
+        description: 'Beer-battered cod with thick-cut fries',
+        price: 16.99,
+        imageUrl: 'https://images.unsplash.com/photo-1544944664-2c6c1f0c9c0c?w=400&h=300&fit=crop',
+        category: 'Seafood',
+        rating: 4.5,
+        isVegetarian: false,
+        allergens: ['Fish', 'Gluten'],
+      ),
+    ];
+  }
+
+  static List<FoodItem> getWings() {
+    return [
+      FoodItem(
+        id: 'wings1',
+        name: 'Buffalo Wings (10 pieces)',
+        description: 'Spicy buffalo wings with celery and blue cheese',
+        price: 12.99,
+        imageUrl: 'https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=400&h=300&fit=crop',
+        category: 'Wings',
+        rating: 4.7,
+        isVegetarian: false,
+        allergens: ['Dairy'],
+      ),
+      FoodItem(
+        id: 'wings2',
+        name: 'BBQ Wings (10 pieces)',
+        description: 'Sweet and smoky BBQ glazed wings',
+        price: 12.99,
+        imageUrl: 'https://images.unsplash.com/photo-1562967916-eb82221dfb92?w=400&h=300&fit=crop',
+        category: 'Wings',
+        rating: 4.6,
+        isVegetarian: false,
+        allergens: [],
+      ),
+      FoodItem(
+        id: 'wings3',
+        name: 'Honey Garlic Wings (10 pieces)',
+        description: 'Sweet and savory honey garlic glazed wings',
+        price: 12.99,
+        imageUrl: 'https://images.unsplash.com/photo-1608039755401-742074f0548d?w=400&h=300&fit=crop',
+        category: 'Wings',
+        rating: 4.8,
+        isVegetarian: false,
+        allergens: [],
+      ),
+    ];
+  }
+
+  static List<FoodItem> getDesserts() {
+    return [
+      FoodItem(
+        id: 'dessert1',
+        name: 'Chocolate Lava Cake',
+        description: 'Warm chocolate cake with molten center and ice cream',
+        price: 7.99,
+        imageUrl: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400&h=300&fit=crop',
+        category: 'Desserts',
+        rating: 4.9,
+        isVegetarian: true,
+        allergens: ['Gluten', 'Dairy', 'Eggs'],
+      ),
+      FoodItem(
+        id: 'dessert2',
+        name: 'New York Cheesecake',
+        description: 'Classic creamy cheesecake with berry compote',
+        price: 6.99,
+        imageUrl: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=400&h=300&fit=crop',
+        category: 'Desserts',
+        rating: 4.8,
+        isVegetarian: true,
+        allergens: ['Gluten', 'Dairy', 'Eggs'],
+      ),
+      FoodItem(
+        id: 'dessert3',
+        name: 'Ice Cream Sundae',
+        description: 'Three scoops with hot fudge, whipped cream, and cherry',
+        price: 5.99,
+        imageUrl: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=400&h=300&fit=crop',
+        category: 'Desserts',
+        rating: 4.5,
+        isVegetarian: true,
+        allergens: ['Dairy'],
+      ),
+    ];
+  }
+
+  static List<FoodItem> getHealthy() {
+    return [
+      FoodItem(
+        id: 'healthy1',
+        name: 'Quinoa Power Bowl',
+        description: 'Quinoa with roasted vegetables and tahini dressing',
+        price: 12.99,
+        imageUrl: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=300&fit=crop',
+        category: 'Healthy',
+        rating: 4.7,
+        isVegetarian: true,
+        allergens: ['Sesame'],
+      ),
+      FoodItem(
+        id: 'healthy2',
+        name: 'Acai Bowl',
+        description: 'Acai berry blend with granola, fresh fruits, and honey',
+        price: 9.99,
+        imageUrl: 'https://images.unsplash.com/photo-1511690743698-d9d85f2fbf38?w=400&h=300&fit=crop',
+        category: 'Healthy',
+        rating: 4.6,
+        isVegetarian: true,
+        allergens: ['Nuts'],
+      ),
+      FoodItem(
+        id: 'healthy3',
+        name: 'Grilled Chicken Salad',
+        description: 'Mixed greens with grilled chicken and balsamic vinaigrette',
+        price: 14.99,
+        imageUrl: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&h=300&fit=crop',
+        category: 'Healthy',
+        rating: 4.5,
+        isVegetarian: false,
+        allergens: [],
+      ),
+    ];
+  }
+
   static Map<String, List<FoodItem>> getAllCategorizedItems() {
     return {
       'Appetizers': getAppetizers(),
@@ -220,6 +524,14 @@ class FoodCategoriesData {
       'Soups': getSoups(),
       'Snacks': getSnacks(),
       'Breakfast': getBreakfast(),
+      'Burgers': getBurgers(),
+      'Pizza': getPizzas(),
+      'Salads': getSalads(),
+      'Pasta': getPasta(),
+      'Seafood': getSeafood(),
+      'Wings': getWings(),
+      'Desserts': getDesserts(),
+      'Healthy': getHealthy(),
     };
   }
 }

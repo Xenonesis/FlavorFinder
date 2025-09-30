@@ -1,59 +1,59 @@
 import 'package:flutter/material.dart';
 
 class PremiumTheme {
-  // Premium Color Palette
-  static const Color primaryOrange = Color(0xFFFF6B35);
-  static const Color primaryDeep = Color(0xFFE55100);
-  static const Color accentGold = Color(0xFFFFB300);
-  static const Color accentAmber = Color(0xFFFFC107);
+  // Modern Premium Color Palette - 2025 Trends
+  static const Color primaryOrange = Color(0xFF6366F1); // Modern indigo (was orange)
+  static const Color primaryDeep = Color(0xFF4F46E5); // Deeper indigo
+  static const Color accentGold = Color(0xFF8B5CF6); // Modern purple (was gold)
+  static const Color accentAmber = Color(0xFF06B6D4); // Cyan accent
   
-  static const Color backgroundLight = Color(0xFFFAFAFA);
-  static const Color backgroundDark = Color(0xFF121212);
-  static const Color surfaceLight = Color(0xFFFFFFFF);
-  static const Color surfaceDark = Color(0xFF1E1E1E);
+  static const Color backgroundLight = Color(0xFFFAFAFC); // Ultra-clean background
+  static const Color backgroundDark = Color(0xFF0F172A); // Deep slate
+  static const Color surfaceLight = Color(0xFFFFFFFF); // Pure white
+  static const Color surfaceDark = Color(0xFF1E293B); // Dark slate surface
   
-  static const Color textPrimary = Color(0xFF212121);
-  static const Color textSecondary = Color(0xFF757575);
-  static const Color textLight = Color(0xFFFFFFFF);
+  static const Color textPrimary = Color(0xFF0F172A); // Rich dark
+  static const Color textSecondary = Color(0xFF64748B); // Modern slate
+  static const Color textLight = Color(0xFFF1F5F9); // Almost white
   
-  static const Color success = Color(0xFF4CAF50);
-  static const Color warning = Color(0xFFFF9800);
-  static const Color error = Color(0xFFF44336);
+  static const Color success = Color(0xFF10B981); // Modern green
+  static const Color warning = Color(0xFFF59E0B); // Modern amber
+  static const Color error = Color(0xFFEF4444); // Modern red
   static const Color info = Color(0xFF2196F3);
 
-  // Gradients
+  // Modern Gradients
   static const LinearGradient primaryGradient = LinearGradient(
     colors: [primaryOrange, primaryDeep],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
-  static const LinearGradient goldGradient = LinearGradient(
+  static const LinearGradient modernGradient = LinearGradient(
     colors: [accentGold, accentAmber],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   static const LinearGradient cardGradient = LinearGradient(
-    colors: [Color(0xFFFFFFFF), Color(0xFFF8F8F8)],
+    colors: [Color(0xFFFFFFFF), Color(0xFFF8FAFC)],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );
 
-  // Shadows
+  // Modern Shadows - Subtle and Contemporary
   static const List<BoxShadow> cardShadow = [
     BoxShadow(
-      color: Color(0x1A000000),
-      blurRadius: 12,
-      offset: Offset(0, 4),
+      color: Color(0x08000000), // Much more subtle
+      blurRadius: 24,
+      offset: Offset(0, 8),
     ),
   ];
 
   static const List<BoxShadow> elevatedShadow = [
     BoxShadow(
-      color: Color(0x26000000),
-      blurRadius: 20,
-      offset: Offset(0, 8),
+      color: Color(0x10000000), // Subtle elevation
+      blurRadius: 32,
+      offset: Offset(0, 12),
     ),
   ];
 

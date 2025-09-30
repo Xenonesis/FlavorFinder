@@ -21,29 +21,29 @@ class _OnboardingPageState extends State<OnboardingPage> {
       title: 'Discover Amazing Food',
       description: 'Explore thousands of restaurants and cuisines from around the world, all in one place.',
       animationAsset: 'assets/animations/food_discovery.json', // You would add actual Lottie files
-      backgroundColor: const Color(0xFFF8F9FA),
-      primaryColor: AppTheme.primaryColor,
+      backgroundColor: const Color(0xFFFAFAFC), // Modern ultra-clean background
+      primaryColor: EnhancedAppTheme.primaryColor, // Modern indigo
     ),
     OnboardingItem(
       title: 'Fast & Reliable Delivery',
       description: 'Get your favorite meals delivered quickly and safely to your doorstep.',
       animationAsset: 'assets/animations/delivery.json',
-      backgroundColor: const Color(0xFFE8F5E8),
-      primaryColor: const Color(0xFF4CAF50),
+      backgroundColor: const Color(0xFFECFDF5), // Modern green background
+      primaryColor: const Color(0xFF10B981), // Modern green
     ),
     OnboardingItem(
       title: 'Easy Ordering Process',
       description: 'Browse menus, customize your order, and pay securely with just a few taps.',
       animationAsset: 'assets/animations/ordering.json',
-      backgroundColor: const Color(0xFFE3F2FD),
-      primaryColor: const Color(0xFF2196F3),
+      backgroundColor: const Color(0xFFEFF6FF), // Modern blue background
+      primaryColor: const Color(0xFF3B82F6), // Modern blue
     ),
     OnboardingItem(
       title: 'Track Your Favorites',
       description: 'Save your favorite restaurants and dishes for quick reordering anytime.',
       animationAsset: 'assets/animations/favorites.json',
-      backgroundColor: const Color(0xFFFCE4EC),
-      primaryColor: const Color(0xFFE91E63),
+      backgroundColor: const Color(0xFFFAF5FF), // Modern purple background
+      primaryColor: const Color(0xFF8B5CF6), // Modern purple
     ),
   ];
 
@@ -161,7 +161,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                             _currentPage == _onboardingItems.length - 1
                                 ? 'Get Started'
                                 : 'Next',
-                            style: TextStyle(
+                            style: Theme.of(context).textTheme.labelLarge?.copyWith(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                               color: Theme.of(context).colorScheme.onPrimary,

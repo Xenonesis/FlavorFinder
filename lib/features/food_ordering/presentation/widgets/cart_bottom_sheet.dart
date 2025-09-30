@@ -6,7 +6,7 @@ import '../bloc/cart/cart_event.dart';
 import '../pages/checkout_page.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/responsive_utils.dart';
-import '../../../domain/entities/cart_item.dart';
+import '../../domain/entities/cart_item.dart';
 
 class CartBottomSheet extends StatelessWidget {
   const CartBottomSheet({super.key});

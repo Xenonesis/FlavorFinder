@@ -1,0 +1,29 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+  strong-mode:
+    implicit-casts: false
+    implicit-dynamic: false
+
+linter:
+  rules:
+    - prefer_single_quotes
+    - sort_child_properties_last
+    - use_key_in_widget_constructors
+    - prefer_const_constructors
+    - prefer_const_literals_to_create_immutables
+    - avoid_unnecessary_containers
+    - prefer_const_constructors_in_immutables
+    - prefer_final_fields
+    - unnecessary_this
+    - avoid_print
+    - avoid_function_literals_in_foreach_calls
+    - prefer_collection_literals
+    - prefer_spread_collections
+    - unnecessary_null_in_if_null_operators
+    - prefer_if_null_operators
+    - sort_constructors_first
+    - sort_unnamed_constructors_first
